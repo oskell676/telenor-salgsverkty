@@ -514,11 +514,10 @@ function showPage(id,el){
 // ═══════════════════════════════════════════════════════════
 // MOBIL
 // ═══════════════════════════════════════════════════════════
-const MOB_SERVICES_UNLIMITED = [
+const MOB_SERVICES = [
   {name:'Nettslett',desc:'Slett/lås telefon eksternt ved tyveri',val:79},
   {name:'Min Sky',desc:'Ubegrenset sikkerhetskopi av bilder og kontakter',val:99},
   {name:'Se Hvem',desc:'Identifiserer ukjente innringere og svindlere',val:49},
-  {name:'BankID på mobil',desc:'Raskeste innlogging til nettbank',val:39},
   {name:'5G + eSIM',desc:'Inkludert uten tillegg',val:49},
 ];
 
@@ -535,8 +534,8 @@ function adjustLinjer(delta){
   calcMobil();
 }
 
-function setLinjeAge(i, val){ linjeData[i].age = val; calcMobil(); }
-function setLinjePakke(i, val){ linjeData[i].pakke = val; calcMobil(); }
+function setLinjeAge(i, val){ linjeData[i].age = val; renderLinjeKort(); calcMobil(); }
+function setLinjePakke(i, val){ linjeData[i].pakke = val; renderLinjeKort(); calcMobil(); }
 
 function linjePris(i, age, pakke){
   if(pakke === 'unlimited'){
@@ -589,29 +588,24 @@ function calcMobil(){
   document.getElementById('mob-total').textContent = fmt(tot);
   document.getElementById('mob-year').textContent = fmt(tot*12);
 
-  // Verdikalkulator – vis for ubegrenset-linjer
-  const harUnlimited = linjeData.some(l=>l.pakke==='unlimited');
+  // Verdikalkulator
+  const totalVal = MOB_SERVICES.reduce((s,x)=>s+x.val,0);
   const vbEl = document.getElementById('mob-value-box');
-  if(harUnlimited){
-    const totalVal = MOB_SERVICES_UNLIMITED.reduce((s,x)=>s+x.val,0);
-    const rows = MOB_SERVICES_UNLIMITED.map(s=>
-      `<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">~${s.val} kr verdi</span></div>`
-    ).join('');
-    vbEl.innerHTML = `
-      <div class="value-box-title">💎 Inkludert i ubegrenset-abonnement</div>
-      ${rows}
-      <div class="value-total-row">
-        <span class="value-total-label">Samlet verdi inkludert</span>
-        <span class="value-total-num">~${totalVal} kr/mnd</span>
-      </div>`;
-    vbEl.style.display='block';
-  } else {
-    vbEl.style.display='none';
-  }
+  const rows = MOB_SERVICES.map(s=>
+    `<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">~${s.val} kr verdi</span></div>`
+  ).join('');
+  vbEl.innerHTML = `
+    <div class="value-box-title">💎 Inkludert i alle abonnement</div>
+    ${rows}
+    <div class="value-total-row">
+      <span class="value-total-label">Samlet verdi inkludert</span>
+      <span class="value-total-num">~${totalVal} kr/mnd</span>
+    </div>`;
+  vbEl.style.display='block';
 
   // Inkludert-liste
   const li = document.getElementById('mob-inkludert-liste'); li.innerHTML='';
-  MOB_SERVICES_UNLIMITED.forEach(s=>{
+  MOB_SERVICES.forEach(s=>{
     const d=document.createElement('div');
     d.style.cssText='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid #f0f0f0;';
     d.innerHTML=`<span style="color:#1D9E75;font-size:15px;flex-shrink:0;">✓</span>
@@ -626,7 +620,7 @@ function calcMobil(){
   if(ko>0){
     const d=ko-tot;
     if(d>0) s.innerHTML=`<div class="banner banner-green" style="margin-top:10px;"><div class="banner-title" style="color:#085041;">Sparer ${fmt(d)}/mnd 🎉</div><div class="banner-sub">Det er <strong>${fmt(d*12)}</strong> i året.</div></div>`;
-    else if(d<0) s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Telenor er ${fmt(Math.abs(d))}/mnd mer</div><div class="banner-sub">Vis verdikalkulatoren – inkluderte tjenester gir ekstra verdi.</div></div>`;
+    else if(d<0) s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Telenor er ${fmt(Math.abs(d))}/mnd mer</div><div class="banner-sub">Men inkluderte tjenester (Nettslett, Min Sky, Se Hvem, 5G) er verdt ~${MOB_SERVICES.reduce((a,x)=>a+x.val,0)} kr/mnd ekstra.</div></div>`;
     else s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Samme pris – men mer igjen for pengene</div></div>`;
   } else {
     s.innerHTML='';
