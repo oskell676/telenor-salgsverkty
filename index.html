@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Telenor Salg">
+<title>Telenor Salgsverktøy</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a1a;min-height:100vh;padding-bottom:80px;}
+
+/* NAV */
+.nav{background:#003d7a;padding:14px 16px 0;padding-top:max(14px,env(safe-area-inset-top));}
+.nav h1{color:white;font-size:18px;font-weight:700;margin-bottom:12px;}
+.tabs{display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:8px 14px;border-radius:10px 10px 0 0;font-size:13px;font-weight:500;border:none;cursor:pointer;color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.1);}
+.tab.active{background:#f0f4f8;color:#003d7a;font-weight:700;}
+
+/* PAGES */
+.page{display:none;padding:16px;max-width:660px;margin:0 auto;}
+.page.active{display:block;}
+
+/* CARDS */
+.card{background:white;border-radius:14px;padding:16px;margin-bottom:14px;border:0.5px solid #e0e0e0;}
+.card-title{font-size:11px;font-weight:700;color:#888;letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px;}
+.card-title.blue{color:#005bac;}
+.card-title.green{color:#1D9E75;}
+.card-title.red{color:#c0001f;}
+
+/* BUTTONS */
+.btn{display:inline-block;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:opacity .15s;}
+.btn:active{opacity:.8;}
+.btn-blue{background:#005bac;color:white;}
+.btn-outline{background:none;border:1.5px solid #005bac;color:#005bac;}
+.btn-sm{padding:7px 13px;font-size:13px;}
+.btn-block{width:100%;display:block;text-align:center;}
+.btn-red{background:#c0001f;color:white;}
+.btn-gray{background:#eee;color:#555;}
+.reset-btn{background:none;border:1px solid #ddd;border-radius:8px;padding:8px 14px;font-size:13px;color:#888;cursor:pointer;margin-top:10px;width:100%;}
+
+/* INPUTS */
+input[type=number],input[type=text],input[type=date],select,textarea{border:1px solid #ddd;border-radius:8px;padding:9px 12px;font-size:15px;background:#f8f8f8;color:#1a1a1a;width:100%;}
+input[type=number]{text-align:right;}
+.input-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.input-row:last-child{margin-bottom:0;}
+.input-row label{font-size:14px;color:#333;flex:1;}
+.input-row .right{display:flex;align-items:center;gap:6px;}
+.input-row input[type=number]{width:85px;}
+.lbl-small{font-size:13px;color:#888;}
+.field-label{font-size:13px;font-weight:500;color:#555;margin-bottom:5px;display:block;}
+.field-group{margin-bottom:12px;}
+
+/* TOGGLE */
+.toggle{width:48px;height:27px;border-radius:14px;border:none;cursor:pointer;position:relative;flex-shrink:0;transition:background .2s;}
+.toggle.on{background:#005bac;} .toggle.off{background:#ccc;}
+.knob{width:21px;height:21px;border-radius:50%;background:white;position:absolute;top:3px;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on .knob{left:24px;} .toggle.off .knob{left:3px;}
+
+/* METRICS */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.metric{background:#f5f7fa;border-radius:10px;padding:12px 14px;}
+.metric-label{font-size:11px;color:#888;margin-bottom:4px;}
+.metric-value{font-size:20px;font-weight:700;}
+.mv-red{color:#c0001f;} .mv-blue{color:#005bac;} .mv-green{color:#1D9E75;} .mv-gray{color:#888;} .mv-orange{color:#D87A10;}
+
+/* BANNERS */
+.banner{border-radius:10px;padding:13px 15px;margin-bottom:12px;}
+.banner-green{background:#e1f5ee;border-left:4px solid #1D9E75;}
+.banner-red{background:#fde8e8;border-left:4px solid #c0001f;}
+.banner-blue{background:#e6f1fb;border-left:4px solid #005bac;}
+.banner-orange{background:#fff3dc;border-left:4px solid #D87A10;}
+.banner-title{font-size:16px;font-weight:700;}
+.banner-sub{font-size:13px;margin-top:3px;color:#555;line-height:1.5;}
+
+/* VALUE BOX */
+.value-box{background:linear-gradient(135deg,#003d7a 0%,#005bac 100%);border-radius:14px;padding:18px;margin-bottom:14px;color:white;}
+.value-box-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#7ec8ff;margin-bottom:10px;}
+.value-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:14px;}
+.value-row:last-of-type{border-bottom:none;}
+.value-row .vr-name{color:rgba(255,255,255,0.85);}
+.value-row .vr-price{color:#7ec8ff;font-weight:600;}
+.value-total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;border-top:1px solid rgba(255,255,255,0.25);margin-top:4px;}
+.value-total-label{font-size:13px;color:rgba(255,255,255,0.7);}
+.value-total-num{font-size:22px;font-weight:800;color:white;}
+.value-you-pay{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:10px 14px;background:rgba(255,255,255,0.12);border-radius:8px;}
+.value-you-pay .label{font-size:13px;color:rgba(255,255,255,0.75);}
+.value-you-pay .num{font-size:18px;font-weight:700;color:#7fffb2;}
+
+/* SVC ROWS */
+.svc-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid #f0f0f0;}
+.svc-row:last-of-type{border-bottom:none;}
+.svc-info{flex:1;}
+.svc-name{font-size:14px;font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.svc-price{font-size:12px;color:#888;margin-top:1px;}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.badge-green{background:#e1f5ee;color:#085041;}
+.badge-blue{background:#e6f1fb;color:#185FA5;}
+.badge-red{background:#fde8e8;color:#9a0000;}
+.badge-gray{background:#f1efe8;color:#5a5856;}
+.badge-orange{background:#fff3dc;color:#854F0B;}
+
+/* BREAKDOWN */
+.brow{display:flex;justify-content:space-between;font-size:13px;color:#666;padding:3px 0;}
+.brow.total-row{font-weight:700;color:#1a1a1a;font-size:14px;border-top:0.5px solid #e0e0e0;margin-top:4px;padding-top:7px;}
+.green-t{color:#1D9E75;font-weight:600;} .red-t{color:#c0001f;}
+
+/* OBJECTIONS */
+.obj-card{background:#f8faff;border-radius:12px;border:1px solid #dde8f8;margin-bottom:10px;overflow:hidden;}
+.obj-header{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;cursor:pointer;}
+.obj-q{font-size:14px;font-weight:600;color:#003d7a;flex:1;}
+.obj-arrow{font-size:12px;color:#888;transition:transform .2s;}
+.obj-arrow.open{transform:rotate(180deg);}
+.obj-body{display:none;padding:0 15px 13px;font-size:14px;color:#333;line-height:1.6;}
+.obj-body.open{display:block;}
+.obj-tip{background:#e1f5ee;border-radius:8px;padding:9px 12px;margin-top:8px;font-size:13px;color:#085041;}
+
+/* BEHOVSAVDEKKER */
+.step-indicator{display:flex;gap:6px;margin-bottom:16px;}
+.step-dot{width:8px;height:8px;border-radius:50%;background:#ddd;}
+.step-dot.active{background:#005bac;} .step-dot.done{background:#1D9E75;}
+.question-card{background:white;border-radius:14px;padding:20px;margin-bottom:14px;border:0.5px solid #e0e0e0;}
+.question-text{font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:6px;}
+.question-sub{font-size:13px;color:#888;margin-bottom:16px;}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.answer-btn{padding:12px;border-radius:10px;border:1.5px solid #ddd;background:white;font-size:14px;cursor:pointer;text-align:left;transition:all .15s;line-height:1.3;}
+.answer-btn.selected{border-color:#005bac;background:#e6f1fb;color:#003d7a;font-weight:600;}
+.recommendation{background:#003d7a;border-radius:14px;padding:18px;color:white;margin-bottom:12px;}
+.rec-title{font-size:11px;font-weight:700;color:#7ec8ff;letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px;}
+.rec-main{font-size:17px;font-weight:700;margin-bottom:6px;}
+.rec-sub{font-size:13px;color:#b5d4f4;line-height:1.5;}
+.rec-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.rec-tag{font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.15);color:white;}
+
+/* SIKRE FEATURES */
+.feat-row{display:flex;gap:12px;padding:11px 0;border-bottom:0.5px solid #f0f0f0;align-items:flex-start;}
+.feat-row:last-child{border-bottom:none;}
+.feat-icon{font-size:22px;flex-shrink:0;width:28px;text-align:center;}
+.feat-title{font-size:14px;font-weight:700;color:#1a1a1a;}
+.feat-desc{font-size:13px;color:#555;margin-top:2px;line-height:1.4;}
+.feat-val{font-size:11px;font-weight:700;color:#1D9E75;margin-top:3px;}
+
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month{font-size:16px;font-weight:700;color:#1a1a1a;}
+.cal-nav{background:none;border:1px solid #ddd;border-radius:8px;padding:5px 12px;font-size:16px;cursor:pointer;color:#333;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:14px;}
+.cal-day-name{text-align:center;font-size:11px;font-weight:600;color:#888;padding:4px 0;}
+.cal-day{border-radius:8px;padding:6px 4px;min-height:42px;cursor:pointer;position:relative;background:#f9f9f9;border:0.5px solid #eee;}
+.cal-day.today{background:#e6f1fb;border-color:#005bac;}
+.cal-day.selected{background:#005bac;border-color:#003d7a;}
+.cal-day.other-month{opacity:0.35;}
+.cal-day-num{font-size:13px;font-weight:500;color:#1a1a1a;text-align:center;}
+.cal-day.selected .cal-day-num{color:white;}
+.cal-day.today .cal-day-num{color:#003d7a;font-weight:700;}
+.cal-dot-row{display:flex;gap:2px;justify-content:center;margin-top:3px;flex-wrap:wrap;}
+.cal-dot{width:5px;height:5px;border-radius:50%;}
+.dot-hp{background:#005bac;} .dot-hc{background:#1D9E75;} .dot-vula{background:#9900cc;} .dot-trad{background:#E8890C;} .dot-note{background:#888;}
+.event-form{background:white;border-radius:14px;padding:16px;margin-bottom:14px;border:0.5px solid #dde8f8;}
+.event-form-title{font-size:14px;font-weight:700;color:#003d7a;margin-bottom:12px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.type-grid .type-btn:last-child:nth-child(odd){grid-column:1/-1;}
+.type-btn{padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;background:white;font-size:13px;font-weight:500;cursor:pointer;text-align:left;transition:all .15s;width:100%;line-height:1.3;}
+.type-btn .type-title{font-weight:700;font-size:13px;}
+.type-btn .type-desc{font-size:11px;color:#999;margin-top:2px;font-weight:400;line-height:1.3;}
+.type-btn.sel-hp{border-color:#005bac;background:#e6f1fb;}
+.type-btn.sel-hp .type-title{color:#003d7a;}
+.type-btn.sel-hp .type-desc{color:#5a8fcc;}
+.type-btn.sel-hc{border-color:#1D9E75;background:#e1f5ee;}
+.type-btn.sel-hc .type-title{color:#085041;}
+.type-btn.sel-hc .type-desc{color:#3a9e75;}
+.type-btn.sel-vula{border-color:#9900cc;background:#f0e0ff;}
+.type-btn.sel-vula .type-title{color:#6600aa;}
+.type-btn.sel-vula .type-desc{color:#9944cc;}
+.type-btn.sel-trad{border-color:#E8890C;background:#fff3dc;}
+.type-btn.sel-trad .type-title{color:#854F0B;}
+.type-btn.sel-trad .type-desc{color:#c07020;}
+.type-btn.sel-annet{border-color:#888;background:#f1efe8;}
+.type-btn.sel-annet .type-title{color:#444;}
+.type-btn.sel-annet .type-desc{color:#888;}
+.event-item{background:white;border-radius:12px;border:0.5px solid #e0e0e0;padding:13px 15px;margin-bottom:8px;}
+.event-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.event-item-title{font-size:14px;font-weight:700;color:#1a1a1a;}
+.event-type-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.ev-hp{background:#e6f1fb;color:#003d7a;}
+.ev-hc{background:#e1f5ee;color:#085041;}
+.ev-vula{background:#f0e0ff;color:#6600aa;}
+.ev-trad{background:#fff3dc;color:#854F0B;}
+.ev-annet{background:#f1efe8;color:#444;}
+.event-item-detail{font-size:13px;color:#555;margin-bottom:3px;line-height:1.4;}
+.event-del{background:none;border:none;color:#c0001f;font-size:13px;cursor:pointer;padding:0;}
+.no-events{text-align:center;padding:20px;color:#aaa;font-size:14px;}
+
+/* INCLUDED NOTE */
+.included-note{background:#e8f4fd;border-radius:10px;padding:11px 13px;font-size:13px;color:#185FA5;margin-bottom:12px;display:none;}
+
+hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <h1>⚡ Telenor Salgsverktøy</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('behov',this)">🎯 Behovsavdekker</button>
+    <button class="tab" onclick="showPage('mobil',this)">📱 Mobil</button>
+    <button class="tab" onclick="showPage('fiber',this)">🏠 Fiber</button>
+    <button class="tab" onclick="showPage('sikre',this)">🔒 Sikre</button>
+    <button class="tab" onclick="showPage('innvendinger',this)">💬 Innvendinger</button>
+    <button class="tab" onclick="showPage('kalender',this)">📅 Kalender</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BEHOVSAVDEKKER
+═══════════════════════════════════════════════════════════ -->
+<div id="page-behov" class="page active">
+  <div id="behov-questions">
+    <div class="card" style="background:#003d7a;border:none;">
+      <p style="color:#7ec8ff;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;">BEHOVSAVDEKKER</p>
+      <p style="color:white;font-size:15px;line-height:1.5;">Still kunden disse spørsmålene og få en skreddersydd anbefaling.</p>
+    </div>
+    <div id="step-dots" class="step-indicator"></div>
+    <div id="question-container"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-gray btn-sm" id="btn-prev" onclick="prevStep()" style="display:none;">← Tilbake</button>
+      <button class="btn btn-blue btn-sm" id="btn-next" onclick="nextStep()">Neste →</button>
+    </div>
+  </div>
+  <div id="behov-result" style="display:none;">
+    <div id="recommendation-box"></div>
+    <div id="result-details"></div>
+    <button class="btn btn-outline btn-block" onclick="resetBehov()" style="margin-top:8px;">↺ Ny kunde</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MOBIL
+═══════════════════════════════════════════════════════════ -->
+<div id="page-mobil" class="page">
+
+  <div class="card">
+    <div class="card-title">Kundens profil</div>
+    <div class="input-row">
+      <label>Alder</label>
+      <select id="mob-alder" onchange="calcMobil()" style="width:160px;">
+        <option value="adult">Over 30 år</option>
+        <option value="youth">Under 30 år</option>
+        <option value="child">Under 13 år</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>Antall linjer</label>
+      <div class="right"><input type="number" id="mob-linjer" value="1" min="1" max="10" style="width:70px;" oninput="calcMobil()"></div>
+    </div>
+    <div class="input-row">
+      <label>Datapakke</label>
+      <select id="mob-data" onchange="calcMobil()" style="width:160px;">
+        <option value="10gb">10 GB</option>
+        <option value="unlimited">Ubegrenset</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="metric"><div class="metric-label">1. linje</div><div class="metric-value mv-blue" id="mob-price1">—</div></div>
+    <div class="metric"><div class="metric-label">Ekstra linje</div><div class="metric-value mv-blue" id="mob-price-extra">—</div></div>
+    <div class="metric"><div class="metric-label">Totalt/mnd</div><div class="metric-value mv-green" id="mob-total">—</div></div>
+    <div class="metric"><div class="metric-label">Totalt/år</div><div class="metric-value mv-green" id="mob-year">—</div></div>
+  </div>
+
+  <!-- VERDIKALKULATOR MOBIL -->
+  <div class="value-box" id="mob-value-box"></div>
+
+  <div class="card">
+    <div class="card-title blue">Inkludert i abonnementet</div>
+    <div id="mob-inkludert-liste"></div>
+    <p style="font-size:12px;color:#aaa;margin-top:10px;">📵 Ingen bindingstid på mobilabonnement.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Sammenlign med konkurrent</div>
+    <div class="input-row">
+      <label>Hva betaler de i dag? (kr/mnd)</label>
+      <div class="right"><input type="number" id="mob-konkurrent" value="0" style="width:85px;" oninput="calcMobil()"></div>
+    </div>
+    <div id="mob-sammenlign"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIBER
+═══════════════════════════════════════════════════════════ -->
+<div id="page-fiber" class="page">
+
+  <div class="card">
+    <div class="card-title">Priser</div>
+    <div class="input-row">
+      <label>Telenor fiber 500/500 + TV-pakke</label>
+      <div class="right"><input type="number" id="tele-price" value="1197" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
+    </div>
+    <div class="input-row">
+      <label>Altibox tilbudspris</label>
+      <div class="right"><input type="number" id="alti-price" value="899" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Strømmetjenester kunden allerede betaler for</div>
+    <p style="font-size:12px;color:#888;margin-bottom:10px;">Slå på alle tjenester kunden betaler separat i dag.</p>
+    <div id="fiber-services"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:0.5px solid #f0f0f0;">
+      <input type="text" id="custom-name" placeholder="Annen tjeneste..." style="flex:1;">
+      <input type="number" id="custom-price" placeholder="kr" style="width:75px;">
+      <button class="btn btn-blue btn-sm" onclick="addCustom()">+</button>
+    </div>
+    <button class="reset-btn" onclick="resetFiber()">↺ Nullstill – ny kunde</button>
+  </div>
+
+  <!-- VERDIKALKULATOR FIBER -->
+  <div class="value-box" id="fiber-value-box" style="display:none;"></div>
+
+  <div class="included-note" id="fiber-included-note"></div>
+  <div id="fiber-banner"></div>
+
+  <div class="card">
+    <div class="card-title">Kostnadssammenligning</div>
+    <div class="grid2">
+      <div class="metric"><div class="metric-label">Altibox totalt</div><div class="metric-value mv-red" id="f-total-alti">899 kr</div></div>
+      <div class="metric"><div class="metric-label">Telenor totalt</div><div class="metric-value mv-blue" id="f-total-tele">1 197 kr</div></div>
+      <div class="metric"><div class="metric-label">Sparer/mnd</div><div class="metric-value mv-gray" id="f-save-month">—</div></div>
+      <div class="metric"><div class="metric-label">Sparer/år</div><div class="metric-value mv-gray" id="f-save-year">—</div></div>
+    </div>
+    <div id="fiber-breakdown"></div>
+  </div>
+
+  <div class="card" style="background:#f8faff;border-color:#dde8f8;">
+    <div class="card-title blue">Bindingstid</div>
+    <p style="font-size:14px;color:#333;line-height:1.6;">📋 Fiber og TV har <strong>bindingstid</strong> – husk å informere kunden.<br><br>📱 Mobil og Sikre hjemmenett: <strong>ingen bindingstid</strong>.</p>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SIKRE
+═══════════════════════════════════════════════════════════ -->
+<div id="page-sikre" class="page">
+
+  <div class="card" style="background:#003d7a;border:none;">
+    <p style="color:#7ec8ff;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;">TELENOR SIKRE HJEMMENETT</p>
+    <p style="color:white;font-size:15px;line-height:1.5;">Totalløsning som beskytter hele husstanden på nettverksnivå. <strong style="color:#7ec8ff;">Ingen bindingstid.</strong></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title blue">Hva er Sikre?</div>
+    <p style="font-size:14px;color:#333;line-height:1.6;margin-bottom:12px;">Sikre hjemmenett beskytter alle enheter i hjemmet automatisk – uten installasjon per enhet. Det aktiveres i ruteren og fungerer på mobil, PC, nettbrett, smart-TV, kameraer og alle IoT-enheter.</p>
+    <div style="display:flex;align-items:center;gap:12px;padding:14px;background:#e6f1fb;border-radius:10px;">
+      <span style="font-size:28px;">🔒</span>
+      <div>
+        <div style="font-size:22px;font-weight:800;color:#003d7a;">200 kr/mnd</div>
+        <div style="font-size:12px;color:#555;">Tillegg til bredbåndsabonnement · Ingen binding</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERDIKALKULATOR SIKRE -->
+  <div class="value-box" id="sikre-value-box"></div>
+
+  <div class="card">
+    <div class="card-title blue">Hva er inkludert?</div>
+    <div id="sikre-features"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title blue">Hvem passer Sikre for?</div>
+    <div id="sikre-target"></div>
+  </div>
+
+  <div class="card" style="background:#f8faff;border-color:#dde8f8;">
+    <div class="card-title blue">Viktig å vite</div>
+    <p style="font-size:14px;color:#333;line-height:1.7;">
+      ✅ <strong>Ingen bindingstid</strong> – avslutt når som helst<br>
+      📱 Administreres via <strong>Mitt Telenor-appen</strong><br>
+      🏠 Krever <strong>bredbånd fra Telenor</strong> hjemme<br>
+      👨‍👩‍👧 Dekker <strong>hele husstanden</strong> – ikke bare én enhet
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title red">Salgsargumenter</div>
+    <div id="sikre-args"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     INNVENDINGER
+═══════════════════════════════════════════════════════════ -->
+<div id="page-innvendinger" class="page">
+  <div class="card" style="background:#003d7a;border:none;margin-bottom:14px;">
+    <p style="color:#7ec8ff;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;">INNVENDINGSBANK</p>
+    <p style="color:white;font-size:14px;line-height:1.5;">Trykk på innvendingen – få det beste svaret og et konkret tips.</p>
+  </div>
+  <div id="objections-list"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     KALENDER
+═══════════════════════════════════════════════════════════ -->
+<div id="page-kalender" class="page">
+
+  <div class="card">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+      <div class="cal-month" id="cal-month-label"></div>
+      <button class="cal-nav" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-top:8px;">
+      <span style="font-size:11px;color:#555;display:flex;align-items:flex-start;gap:5px;">
+        <span class="cal-dot dot-hp" style="margin-top:3px;flex-shrink:0;"></span>
+        <span><strong>HP</strong> – Ingen Telenor-fiber ennå</span>
+      </span>
+      <span style="font-size:11px;color:#555;display:flex;align-items:flex-start;gap:5px;">
+        <span class="cal-dot dot-hc" style="margin-top:3px;flex-shrink:0;"></span>
+        <span><strong>HC</strong> – Telenor-kunde, 2 kabler</span>
+      </span>
+      <span style="font-size:11px;color:#555;display:flex;align-items:flex-start;gap:5px;">
+        <span class="cal-dot dot-vula" style="margin-top:3px;flex-shrink:0;"></span>
+        <span><strong>VULA</strong> – Telenor-kabel, annen leverandør</span>
+      </span>
+      <span style="font-size:11px;color:#555;display:flex;align-items:flex-start;gap:5px;">
+        <span class="cal-dot dot-trad" style="margin-top:3px;flex-shrink:0;"></span>
+        <span><strong>Trådløs</strong> – 4G/5G bredbånd</span>
+      </span>
+      <span style="font-size:11px;color:#555;display:flex;align-items:flex-start;gap:5px;">
+        <span class="cal-dot dot-note" style="margin-top:3px;flex-shrink:0;"></span>
+        <span><strong>Notat</strong></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="event-form">
+    <div class="event-form-title">+ Legg til oppfølging</div>
+
+    <div class="field-group">
+      <label class="field-label">Dato</label>
+      <input type="date" id="ev-date">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Produkttype</label>
+      <div class="type-grid">
+        <button class="type-btn" id="type-hp" onclick="selectType('HP')">
+          <div class="type-title">📡 HP</div>
+          <div class="type-desc">Ingen Telenor-fiber ennå</div>
+        </button>
+        <button class="type-btn" id="type-hc" onclick="selectType('HC')">
+          <div class="type-title">🏠 HC</div>
+          <div class="type-desc">2 kabler, f.eks. Telenor + Altibox</div>
+        </button>
+        <button class="type-btn" id="type-vula" onclick="selectType('VULA')">
+          <div class="type-title">🔌 VULA</div>
+          <div class="type-desc">Telenor-kabel, annen leverandør</div>
+        </button>
+        <button class="type-btn" id="type-trad" onclick="selectType('TRAD')">
+          <div class="type-title">📶 Trådløs</div>
+          <div class="type-desc">Fast 4G/5G, ingen fiberkabel</div>
+        </button>
+        <button class="type-btn" id="type-annet" onclick="selectType('ANNET')">
+          <div class="type-title">📝 Notat</div>
+          <div class="type-desc">Uten produkttype</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Kundenavn / adresse</label>
+      <input type="text" id="ev-kunde" placeholder="F.eks. Kari Nordmann, Storgata 1">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Hvem møtte du?</label>
+      <input type="text" id="ev-hvem" placeholder="F.eks. mannen i huset, kona, begge">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Hvem styrer internett hjemme?</label>
+      <input type="text" id="ev-internett" placeholder="F.eks. sønnen, ektemannen, kunden selv">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Notat / oppfølging</label>
+      <textarea id="ev-notat" rows="3" placeholder="Interessert? Vil tenke på det? Ring tilbake fredag?" style="resize:none;"></textarea>
+    </div>
+
+    <button class="btn btn-blue btn-block" onclick="saveEvent()">Lagre</button>
+  </div>
+
+  <div id="cal-events-section">
+    <div class="card-title" id="cal-events-label" style="margin-bottom:10px;font-size:13px;font-weight:600;color:#555;"></div>
+    <div id="cal-events-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════
+function fmt(n){return Math.round(n).toLocaleString('nb-NO')+' kr';}
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MOBIL
+// ═══════════════════════════════════════════════════════════
+const MOB_SERVICES_UNLIMITED = [
+  {name:'Nettslett',desc:'Slett telefon eksternt ved tyveri',val:79},
+  {name:'Min Sky',desc:'Ubegrenset sikkerhetskopi av bilder',val:99},
+  {name:'Se Hvem',desc:'Identifiserer ukjente innringere',val:49},
+  {name:'BankID på mobil',desc:'Raskeste innlogging til nettbank',val:39},
+  {name:'5G + eSIM',desc:'Inkludert uten tillegg',val:49},
+];
+const MOB_SERVICES_10GB = [
+  {name:'Se Hvem',desc:'Identifiserer ukjente innringere',val:49},
+  {name:'5G + eSIM',desc:'Inkludert uten tillegg',val:49},
+  {name:'Fri tale og SMS',desc:'Ubegrenset i Norge',val:0},
+];
+
+function calcMobil(){
+  const al = document.getElementById('mob-alder').value;
+  const lj = parseInt(document.getElementById('mob-linjer').value)||1;
+  const da = document.getElementById('mob-data').value;
+  const ko = parseInt(document.getElementById('mob-konkurrent').value)||0;
+  let p1,pX;
+  if(da==='unlimited'){p1=399;pX=299;}
+  else{
+    if(al==='child'){p1=49;pX=49;}
+    else if(al==='youth'){p1=199;pX=199;}
+    else{p1=249;pX=249;}
+  }
+  const tot = p1 + Math.max(0,lj-1)*pX;
+  document.getElementById('mob-price1').textContent = fmt(p1);
+  document.getElementById('mob-price-extra').textContent = lj>1 ? fmt(pX) : '—';
+  document.getElementById('mob-total').textContent = fmt(tot);
+  document.getElementById('mob-year').textContent = fmt(tot*12);
+
+  // Inkludert-liste
+  const services = da==='unlimited' ? MOB_SERVICES_UNLIMITED : MOB_SERVICES_10GB;
+  const li = document.getElementById('mob-inkludert-liste'); li.innerHTML='';
+  services.forEach(s=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid #f0f0f0;';
+    d.innerHTML=`<span style="color:#1D9E75;font-size:15px;flex-shrink:0;">✓</span>
+      <div><div style="font-size:14px;font-weight:500;">${s.name}</div>
+      <div style="font-size:12px;color:#888;">${s.desc}</div></div>`;
+    li.appendChild(d);
+  });
+
+  // VERDIKALKULATOR
+  const vbEl = document.getElementById('mob-value-box');
+  if(da==='unlimited'){
+    const totalVal = MOB_SERVICES_UNLIMITED.reduce((s,x)=>s+x.val,0);
+    const rows = MOB_SERVICES_UNLIMITED.map(s=>
+      `<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">~${s.val} kr verdi</span></div>`
+    ).join('');
+    vbEl.innerHTML = `
+      <div class="value-box-title">💎 Totalverdi du får med ubegrenset</div>
+      ${rows}
+      <div class="value-total-row">
+        <span class="value-total-label">Samlet verdi inkludert</span>
+        <span class="value-total-num">~${totalVal} kr/mnd</span>
+      </div>
+      <div class="value-you-pay">
+        <span class="label">Du betaler kun</span>
+        <span class="num">${fmt(p1)}/mnd</span>
+      </div>`;
+  } else {
+    vbEl.innerHTML = `
+      <div class="value-box-title">💎 Hva du får med 10 GB</div>
+      <div class="value-row"><span class="vr-name">Se Hvem (identifiserer svindlere)</span><span class="vr-price">~49 kr verdi</span></div>
+      <div class="value-row"><span class="vr-name">5G + eSIM inkludert</span><span class="vr-price">~49 kr verdi</span></div>
+      <div class="value-row"><span class="vr-name">Norges beste mobilnett</span><span class="vr-price">Priceless</span></div>
+      <div class="value-total-row">
+        <span class="value-total-label">Du betaler</span>
+        <span class="value-total-num">${fmt(p1)}/mnd</span>
+      </div>`;
+  }
+
+  // Konkurrent
+  const s = document.getElementById('mob-sammenlign');
+  if(ko>0){
+    const d=ko-tot;
+    if(d>0) s.innerHTML=`<div class="banner banner-green" style="margin-top:10px;"><div class="banner-title" style="color:#085041;">Sparer ${fmt(d)}/mnd 🎉</div><div class="banner-sub">Det er <strong>${fmt(d*12)}</strong> i året – og de får mer inkludert.</div></div>`;
+    else if(d<0) s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Telenor er ${fmt(Math.abs(d))}/mnd mer</div><div class="banner-sub">Men: inkluderte tjenester er verdt ~${da==='unlimited'?'315':'98'} kr/mnd ekstra. Vis verdikalkulatoren.</div></div>`;
+    else s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Samme pris – men mer igjen for pengene</div></div>`;
+  } else {
+    s.innerHTML='';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// FIBER
+// ═══════════════════════════════════════════════════════════
+const DEFAULT_SERVICES=[
+  {id:'netflix',   name:'Netflix',               price:149, included:true },
+  {id:'max',       name:'Max (HBO)',              price:149, included:true },
+  {id:'disney',    name:'Disney+',               price:119, included:true },
+  {id:'viaplay',   name:'Viaplay Film & Serier', price:169, included:true },
+  {id:'tv2play',   name:'TV 2 Play (u/reklame)', price:199, included:true },
+  {id:'appletv',   name:'Apple TV+',             price:99,  included:true },
+  {id:'skyshow',   name:'Sky Showtime',           price:109, included:true },
+  {id:'amazon',    name:'Amazon Prime',           price:69,  included:false},
+  {id:'spotify',   name:'Spotify',               price:139, included:false},
+  {id:'nrk',       name:'NRK TV',                price:0,   included:false},
+];
+const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0); // 993
+
+let fSvc = DEFAULT_SERVICES.map(s=>({...s,active:false}));
+let fCustom = [];
+
+function renderFiber(){
+  const list = document.getElementById('fiber-services'); list.innerHTML='';
+  [...fSvc,...fCustom].forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='svc-row';
+    const b = s.included
+      ? `<span class="badge badge-green">Inkludert i Telenor</span>`
+      : (s.price>0 ? `<span class="badge badge-red">Ikke inkludert</span>` : '');
+    d.innerHTML=`<div class="svc-info">
+      <div class="svc-name">${s.name} ${b}</div>
+      <div class="svc-price">${s.price>0 ? s.price+' kr/mnd' : 'Gratis'}</div>
+    </div>
+    <button class="toggle ${s.active?'on':'off'}" onclick="toggleF(${i})"><div class="knob"></div></button>`;
+    list.appendChild(d);
+  });
+  calcFiber();
+}
+
+function toggleF(i){
+  if(i<fSvc.length) fSvc[i].active=!fSvc[i].active;
+  else fCustom[i-fSvc.length].active=!fCustom[i-fSvc.length].active;
+  renderFiber();
+}
+
+function addCustom(){
+  const n=document.getElementById('custom-name').value.trim();
+  const p=parseInt(document.getElementById('custom-price').value)||0;
+  if(!n) return;
+  fCustom.push({name:n,price:p,included:false,active:true});
+  document.getElementById('custom-name').value='';
+  document.getElementById('custom-price').value='';
+  renderFiber();
+}
+
+function resetFiber(){
+  fSvc=DEFAULT_SERVICES.map(s=>({...s,active:false}));
+  fCustom=[];
+  document.getElementById('alti-price').value=899;
+  document.getElementById('tele-price').value=1197;
+  renderFiber();
+}
+
+function calcFiber(){
+  const aB = parseInt(document.getElementById('alti-price').value)||0;
+  const tB = parseInt(document.getElementById('tele-price').value)||0;
+  const all = [...fSvc,...fCustom];
+  const active = all.filter(s=>s.active);
+  const sT = active.reduce((s,x)=>s+x.price,0);
+  const iV = active.filter(s=>s.included).reduce((s,x)=>s+x.price,0);
+  const nI = active.filter(s=>!s.included).reduce((s,x)=>s+x.price,0);
+  const tA = aB+sT, tT = tB+nI, diff = tA-tT;
+
+  document.getElementById('f-total-alti').textContent = fmt(tA);
+  document.getElementById('f-total-tele').textContent = fmt(tT);
+
+  const sm=document.getElementById('f-save-month'),sy=document.getElementById('f-save-year'),bn=document.getElementById('fiber-banner');
+  if(active.length===0){
+    sm.textContent='—';sm.className='metric-value mv-gray';
+    sy.textContent='—';sy.className='metric-value mv-gray';
+    bn.innerHTML='';
+  } else if(diff>0){
+    sm.textContent=fmt(diff);sm.className='metric-value mv-green';
+    sy.textContent=fmt(diff*12);sy.className='metric-value mv-green';
+    bn.innerHTML=`<div class="banner banner-green"><div class="banner-title" style="color:#085041;">Kunden sparer ${fmt(diff)}/mnd 🎉</div><div class="banner-sub">Det er <strong>${fmt(diff*12)}</strong> i året – og de beholder alle tjenestene.</div></div>`;
+  } else if(diff<0){
+    sm.textContent=fmt(Math.abs(diff))+' mer';sm.className='metric-value mv-red';
+    sy.textContent=fmt(Math.abs(diff)*12)+' mer';sy.className='metric-value mv-red';
+    bn.innerHTML=`<div class="banner banner-orange"><div class="banner-title" style="color:#854F0B;">Telenor er ${fmt(Math.abs(diff))}/mnd dyrere</div><div class="banner-sub">Fremhev: portabel TV-boks, tri-band ruter og Norges raskeste nett.</div></div>`;
+  } else {
+    sm.textContent='0 kr';sm.className='metric-value mv-gray';
+    sy.textContent='0 kr';sy.className='metric-value mv-gray';
+    bn.innerHTML=`<div class="banner banner-blue"><div class="banner-title" style="color:#003d7a;">Samme totalpris</div><div class="banner-sub">Men Telenor gir ny tri-band ruter og portabel TV-boks.</div></div>`;
+  }
+
+  // Included note
+  const in2=document.getElementById('fiber-included-note');
+  if(iV>0){
+    const ns=active.filter(s=>s.included).map(s=>s.name).join(', ');
+    in2.innerHTML=`<strong>${fmt(iV)}/mnd</strong> inkludert i Telenors TV-pakke: ${ns}`;
+    in2.style.display='block';
+  } else {
+    in2.style.display='none';
+  }
+
+  // VERDIKALKULATOR FIBER
+  const vbEl = document.getElementById('fiber-value-box');
+  const includedSvcs = DEFAULT_SERVICES.filter(s=>s.included);
+  const vbRows = includedSvcs.map(s=>`<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">${s.price} kr/mnd</span></div>`).join('');
+  vbEl.style.display='block';
+  vbEl.innerHTML = `
+    <div class="value-box-title">💎 Strømmetjenester inkludert i TV-pakken</div>
+    ${vbRows}
+    <div class="value-total-row">
+      <span class="value-total-label">Samlet verdi av strømmetjenester</span>
+      <span class="value-total-num">${ALL_STREAMING_VALUE} kr/mnd</span>
+    </div>
+    <div class="value-you-pay">
+      <span class="label">Du betaler (fiber + TV totalt)</span>
+      <span class="num">${fmt(tB)}/mnd</span>
+    </div>`;
+
+  // Breakdown
+  const bd=document.getElementById('fiber-breakdown'); bd.innerHTML='';
+  const br=(l,v,c)=>{
+    const d=document.createElement('div');
+    d.className='brow'+(c==='total'?' total-row':'');
+    const vc=c==='green'?'green-t':c==='red'?'red-t':'';
+    d.innerHTML=`<span>${l}</span><span class="${vc}">${v}</span>`;
+    bd.appendChild(d);
+  };
+  if(active.length>0){
+    br('Altibox fiber + TV',fmt(aB));
+    if(sT>0) br('Strømmetjenester','+ '+fmt(sT),'red');
+    br('Altibox totalt',fmt(tA),'total');
+    const sp=document.createElement('div');sp.style.height='6px';bd.appendChild(sp);
+    br('Telenor fiber + TV-pakke',fmt(tB));
+    if(iV>0) br('Inkludert i pakken','− '+fmt(iV),'green');
+    if(nI>0) br('Tjenester ikke inkludert','+ '+fmt(nI));
+    br('Telenor totalt',fmt(tT),'total');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIKRE – VERDIKALKULATOR
+// ═══════════════════════════════════════════════════════════
+const SIKRE_FEATURES = [
+  {icon:'🛡️', name:'Nettvern+',         desc:'Blokkerer svindelsider, virus og phishing automatisk i nettverket',     val:59},
+  {icon:'🆔', name:'ID-vakt',           desc:'Varsler ved datalekkasjer – også på det mørke nettet',                  val:149},
+  {icon:'💳', name:'Kredittvakt',       desc:'Varsler hvis noen forsøker å ta opp lån i ditt navn',                   val:99},
+  {icon:'🔐', name:'Svindelforsikring', desc:'Forsikring for hele husstanden inkl. advokathjelp ved ID-tyveri',       val:129},
+  {icon:'📞', name:'Se Hvem',           desc:'Identifiserer ukjente innringere og blokkerer svindelnumre',             val:49},
+  {icon:'☁️', name:'Min Sky',           desc:'Ubegrenset, kryptert sikkerhetskopi av bilder og kontakter',             val:79},
+  {icon:'📱', name:'Mitt Telenor-appen',desc:'Full kontroll over alle tjenester på ett sted',                         val:0},
+];
+const SIKRE_TOTAL_VAL = SIKRE_FEATURES.reduce((s,x)=>s+x.val,0); // 564
+
+function renderSikre(){
+  // Verdikalkulator
+  const vbEl = document.getElementById('sikre-value-box');
+  const rows = SIKRE_FEATURES.filter(f=>f.val>0).map(f=>
+    `<div class="value-row"><span class="vr-name">${f.icon} ${f.name}</span><span class="vr-price">~${f.val} kr/mnd verdi</span></div>`
+  ).join('');
+  vbEl.innerHTML = `
+    <div class="value-box-title">💎 Verdikalkulator – hva du får for 200 kr</div>
+    ${rows}
+    <div class="value-total-row">
+      <span class="value-total-label">Samlet markedsverdi</span>
+      <span class="value-total-num">~${SIKRE_TOTAL_VAL} kr/mnd</span>
+    </div>
+    <div class="value-you-pay">
+      <span class="label">Du betaler kun</span>
+      <span class="num">200 kr/mnd</span>
+    </div>`;
+
+  // Features
+  const li = document.getElementById('sikre-features'); li.innerHTML='';
+  SIKRE_FEATURES.forEach(f=>{
+    const d=document.createElement('div'); d.className='feat-row';
+    d.innerHTML=`<span class="feat-icon">${f.icon}</span>
+      <div>
+        <div class="feat-title">${f.name}</div>
+        <div class="feat-desc">${f.desc}</div>
+        ${f.val>0?`<div class="feat-val">Markedsverdi ~${f.val} kr/mnd</div>`:''}
+      </div>`;
+    li.appendChild(d);
+  });
+
+  // Target
+  const targets = [
+    '👨‍👩‍👧 Familier – én pris dekker hele husstanden',
+    '👴 Eldre kunder bekymret for svindel og ID-tyveri',
+    '💼 Folk som nettbanker og handler mye på nett',
+    '🏠 Alle med bredbånd fra Telenor hjemme',
+    '📱 Kunder med barn som bruker internett mye',
+    '🔌 Smarthjem-kunder med mange tilkoblede enheter',
+  ];
+  const tl = document.getElementById('sikre-target'); tl.innerHTML='';
+  targets.forEach(t=>{
+    const d=document.createElement('div');
+    d.style.cssText='font-size:14px;color:#333;padding:8px 0;border-bottom:0.5px solid #f0f0f0;line-height:1.4;';
+    d.textContent=t; tl.appendChild(d);
+  });
+
+  // Salgsargumenter
+  const args = [
+    `«${SIKRE_TOTAL_VAL} kr i verdi for 200 kr – det er et røverkjøp»`,
+    `«200 kr i måneden er 6-7 kr om dagen for å beskytte hele familien»`,
+    `«ID-tyveri kan koste titusener å rydde opp i – Sikre varsler deg umiddelbart»`,
+    `«Svindel på nett er det raskest voksende kriminalitetsområdet i Norge»`,
+    `«Ingen binding – prøv en måned. Hvis det ikke gir trygghet, avslutter du»`,
+    `«Du styrer alt fra Mitt Telenor-appen – enkelt og oversiktlig»`,
+    `«Beskytter også smarthjemenheter som babycamera og ringeklokker som aldri oppdateres»`,
+  ];
+  const al = document.getElementById('sikre-args'); al.innerHTML='';
+  args.forEach(a=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;gap:8px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;font-size:14px;line-height:1.4;';
+    d.innerHTML=`<span style="color:#c0001f;flex-shrink:0;font-weight:700;">→</span>${a}`;
+    al.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// BEHOVSAVDEKKER
+// ═══════════════════════════════════════════════════════════
+const QUESTIONS=[
+  {q:'Hva er viktigst for kunden?',sub:'Velg det som passer best',answers:['Lavest mulig pris','Best mulig dekning','Trygghet og sikkerhet','Alt i ett – enkel løsning'],key:'priority'},
+  {q:'Hvor bor / ferdes kunden?',sub:'',answers:['Storby / tettsted','Distriktet / landsbygd','Reiser mye i Norge','Hytte / kyst / til sjøs'],key:'location'},
+  {q:'Hvem er abonnementet for?',sub:'',answers:['Bare meg selv','Meg og partner','Familie med barn','Familie med tenåringer'],key:'family'},
+  {q:'Hvilke produkter er aktuelt?',sub:'',answers:['Bare mobil','Bare fiber/TV','Mobil + fiber','Sikre – hjemmesikkerhet'],key:'product'},
+  {q:'Hva har kunden i dag?',sub:'',answers:['Telia','Ice / billigoperatør','Altibox','Annet / vet ikke'],key:'current'},
+];
+let bA={},bStep=0;
+
+function renderBehov(){
+  const dots=document.getElementById('step-dots'); dots.innerHTML='';
+  QUESTIONS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='step-dot'+(i===bStep?' active':i<bStep?' done':'');
+    dots.appendChild(d);
+  });
+  const q=QUESTIONS[bStep];
+  document.getElementById('question-container').innerHTML=`
+    <div class="question-card">
+      <div class="question-text">${q.q}</div>
+      ${q.sub?`<div class="question-sub">${q.sub}</div>`:''}
+      <div class="answer-grid">
+        ${q.answers.map(a=>`<button class="answer-btn ${bA[q.key]===a?'selected':''}" onclick="selA('${q.key}','${a}',this)">${a}</button>`).join('')}
+      </div>
+    </div>`;
+  document.getElementById('btn-prev').style.display=bStep>0?'inline-block':'none';
+  document.getElementById('btn-next').textContent=bStep===QUESTIONS.length-1?'Se anbefaling →':'Neste →';
+}
+
+function selA(k,v,el){
+  bA[k]=v;
+  el.closest('.answer-grid').querySelectorAll('.answer-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function nextStep(){if(!bA[QUESTIONS[bStep].key])return;if(bStep<QUESTIONS.length-1){bStep++;renderBehov();}else showBehovResult();}
+function prevStep(){if(bStep>0){bStep--;renderBehov();}}
+function resetBehov(){bA={};bStep=0;document.getElementById('behov-questions').style.display='block';document.getElementById('behov-result').style.display='none';renderBehov();}
+
+function showBehovResult(){
+  document.getElementById('behov-questions').style.display='none';
+  document.getElementById('behov-result').style.display='block';
+  const a=bA; let rMain='',rSub='',tags=[];
+
+  if(a.product==='Sikre – hjemmesikkerhet'){
+    rMain='Sikre hjemmenett – 200 kr/mnd';
+    rSub=`Totalverdi ~${SIKRE_TOTAL_VAL} kr/mnd. Inkluderer Nettvern+, ID-vakt, Kredittvakt og Svindelforsikring for hele husstanden. Ingen bindingstid.`;
+    tags=['200 kr/mnd','Ingen binding','~'+SIKRE_TOTAL_VAL+' kr verdi','ID-vakt','Kredittvakt'];
+  } else if(a.product==='Bare mobil'||a.product==='Mobil + fiber'){
+    if(a.family==='Familie med barn'){
+      rMain='Ubegrenset 399 kr + barn 49 kr';
+      rSub='Første linje ubegrenset 399 kr, ekstra linjer 299 kr, barn under 13 år kun 49 kr. Ingen bindingstid.';
+      tags=['399 kr – 1. linje','299 kr – familie','49 kr – under 13 år'];
+    } else if(a.family==='Familie med tenåringer'){
+      rMain='Ubegrenset + ungdom 199 kr';
+      rSub='Første linje ubegrenset 399 kr, under 30 år: 10 GB for 199 kr/mnd. Ingen bindingstid.';
+      tags=['399 kr ubegrenset','199 kr under 30 år'];
+    } else if(a.priority==='Lavest mulig pris'){
+      rMain='10 GB for 249 kr/mnd';
+      rSub='Best dekning til konkurransedyktig pris. Ingen bindingstid.';
+      tags=['249 kr/mnd','10 GB','Ingen binding'];
+    } else {
+      rMain='Ubegrenset data – 399 kr/mnd';
+      rSub='Inkluderer Nettslett, Min Sky, Se Hvem og BankID. Norges beste dekning. Ingen bindingstid.';
+      tags=['399 kr/mnd','Ubegrenset','Ingen binding','Nettslett','Min Sky'];
+    }
+  }
+  if(a.product==='Bare fiber/TV'||a.product==='Mobil + fiber'){
+    rMain=(rMain?rMain+' + ':'')+'Fiber 500/500 + TV 1 197 kr';
+    rSub=(rSub?rSub+' ':'')+'TV-pakken inkluderer 7 strømmetjenester (samlet verdi '+ALL_STREAMING_VALUE+' kr/mnd). Ny portabel TV-boks. Bindingstid på fiber og TV.';
+    tags=[...tags,'Fiber 500/500','7 strømmetjenester',''+ALL_STREAMING_VALUE+' kr verdi','Portabel TV-boks'];
+  }
+  if(a.location==='Distriktet / landsbygd'||a.location==='Hytte / kyst / til sjøs'){
+    rSub+=' Telenor er eneste reelle valg utenfor by – Ice fungerer dårlig.';
+    tags.push('Best dekning i distriktet');
+  }
+  if(!rMain) rMain='Telenor passer for denne kunden';
+
+  document.getElementById('recommendation-box').innerHTML=`
+    <div class="recommendation">
+      <div class="rec-title">Anbefaling</div>
+      <div class="rec-main">${rMain}</div>
+      <div class="rec-sub">${rSub}</div>
+      <div class="rec-tags">${tags.map(t=>`<span class="rec-tag">${t}</span>`).join('')}</div>
+    </div>`;
+
+  let args=[];
+  if(a.current==='Telia') args.push('Telia taper klart på distriktsdekning – Telenor dekker 99,9% av befolkningen.','Telenor inkluderer Nettslett, Min Sky og Se Hvem – Telia har ikke tilsvarende.');
+  if(a.current==='Ice / billigoperatør') args.push('Ice har eget nett men det fungerer svært dårlig utenfor by. Utenfor Ice-dekning faller kunden tilbake på Telenors nett som andrerangert.','Ice inkluderer ikke Nettslett, Min Sky eller Se Hvem.');
+  if(a.current==='Altibox') args.push('Altibox TV-boks er låst til huset – Telenors nye TV-boks kan tas med overalt.','Legg strømmetjenestene kunden har inn i fiberkalkulatoren – Telenor er ofte billigere totalt.');
+  if(a.priority==='Trygghet og sikkerhet') args.push('Telenor inkluderer Nettslett, Min Sky og Se Hvem i abonnementet.','Sikre hjemmenett gir full beskyttelse mot ID-tyveri – verdi ~'+SIKRE_TOTAL_VAL+' kr/mnd for kun 200 kr.');
+  if(args.length>0){
+    document.getElementById('result-details').innerHTML=`
+      <div class="card">
+        <div class="card-title">Gode argumenter</div>
+        ${args.map(a=>`<div style="display:flex;gap:8px;padding:8px 0;border-bottom:0.5px solid #f0f0f0;font-size:14px;line-height:1.4;"><span style="color:#005bac;flex-shrink:0;font-weight:700;">→</span>${a}</div>`).join('')}
+      </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// INNVENDINGER
+// ═══════════════════════════════════════════════════════════
+const OBJECTIONS=[
+  {q:'"Telia er billigere"',a:'På listepriser stemmer det for noen planer. Men mine priser via salgskanal er 399 kr for ubegrenset – Telia tar 499 kr. Og Telenor inkluderer Nettslett, Min Sky og Se Hvem som Telia ikke har.',tip:'Vis mobilkalkulatoren – sammenlign konkret. Verdiargumentet vinner som regel.'},
+  {q:'"Ice er mye billigere"',a:'Ice har sitt eget nett, men det fungerer svært dårlig utenfor byene. Ice-kunder er <strong>andrerangert</strong> på Telenors basestasjoner – Telenor-kunder går alltid foran. Utenfor by er forskjellen enorm.',tip:'Spør om hytte, båt eller friluftsliv – svaret avgjør argumentet.'},
+  {q:'"Altibox er billigere på fiber"',a:'Altibox koster 899 kr, men inkluderer ingen strømmetjenester. Med Telenors TV-pakke får kunden Netflix, Max, Disney+, Viaplay, TV 2 Play, Apple TV+ og Sky Showtime – samlet verdi 993 kr/mnd.',tip:'Bruk fiberkalkulatoren – la kunden se den reelle totalprisen selv.'},
+  {q:'"Jeg har bindingstid"',a:'Mange operatører har lavere bruddgebyr enn folk tror. Hva er du bundet til og ut når? Vi kan ofte hjelpe med dekning av bruddgebyret ved overgang til Telenor.',tip:'Finn ut nøyaktig bindingstid og dato – regn på bruddgebyret.'},
+  {q:'"Jeg er fornøyd med det jeg har"',a:'Det er bra! Men du er fornøyd med det du kjenner. Telenor gir deg det samme pluss Nettslett, Min Sky og Se Hvem – og sannsynligvis bedre dekning og mer verdi for pengene. Ingen bindingstid på mobil.',tip:'Plant frøet og avtal konkret oppfølging. Registrer i kalender.'},
+  {q:'"Jeg må tenke på det"',a:'Absolutt. Hva er du usikker på – prisen, dekningen eller noe annet? Da kan jeg gi deg akkurat den informasjonen du trenger for å ta en god avgjørelse.',tip:'Finn den ekte innvendingen – det er sjelden hele svaret. Avtal dato for oppfølging.'},
+  {q:'"TV-boksen er låst til huset"',a:'Den gamle boksen var det – den nye Telenor TV-boksen fungerer som Apple TV og kan tas med overalt. Hjemme, på hytta, hos besteforeldrene. Altibox sin boks er fortsatt låst til huset.',tip:'Fremhev «portabel» – det er et unikt og konkret salgsargument.'},
+  {q:'"Vil ikke ha bindingstid"',a:'Mobilabonnement og Sikre har <strong>ingen bindingstid</strong> – du kan avslutte når du vil. Fiber og TV har bindingstid, men det er standard i bransjen og gir deg den beste prisen over tid.',tip:'Vær tydelig: mobil = ingen binding. Fiber/TV = binding. Ikke bland kortene.'},
+  {q:'"Dekningen er like god overalt"',a:'I store byer er det ganske likt. Men i distriktene, fjellet og til sjøs er Telenor suverent best. Ice fungerer dårlig utenfor by. Telia taper klart i distrikt.',tip:'Spør om hytte, båt eller friluftsliv – svaret avgjør tyngden av argumentet.'},
+  {q:'"Jeg byttet akkurat"',a:'Forstår det. Når går bindingstiden ut? Da kan vi ta en prat – jeg noterer deg og tar kontakt på riktig tidspunkt. Du skal slippe å tenke på det selv.',tip:'Ta kontaktinfo og legg inn nøyaktig dato i kalender – dette er varm lead.'},
+  {q:'"Trenger ikke Sikre – har ingenting å skjule"',a:'Sikre handler ikke om hva du skjuler – det handler om at kriminelle kan misbruke din identitet til å ta opp lån, opprette kontoer eller tømme bankkontoer. ID-tyveri rammer tilfeldige folk.',tip:'«Du får '+SIKRE_TOTAL_VAL+' kr i verdi for 200 kr/mnd. Ingen binding – prøv en måned.»'},
+];
+
+function renderObjList(){
+  const list=document.getElementById('objections-list'); list.innerHTML='';
+  OBJECTIONS.forEach((o,i)=>{
+    const d=document.createElement('div'); d.className='obj-card';
+    d.innerHTML=`<div class="obj-header" onclick="togObj(${i},this)">
+      <div class="obj-q">${o.q}</div><div class="obj-arrow">▼</div>
+    </div>
+    <div class="obj-body" id="obj-${i}"><p>${o.a}</p><div class="obj-tip">💡 ${o.tip}</div></div>`;
+    list.appendChild(d);
+  });
+}
+function togObj(i,h){
+  const b=document.getElementById('obj-'+i);
+  const a=h.querySelector('.obj-arrow');
+  b.classList.toggle('open');
+  a.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════════════
+// KALENDER
+// ═══════════════════════════════════════════════════════════
+let calYear=new Date().getFullYear();
+let calMonth=new Date().getMonth();
+let selectedDate=null;
+let selectedType=null;
+
+function getEvents(){return JSON.parse(localStorage.getItem('telenor_cal_events')||'[]');}
+function saveEvents(ev){localStorage.setItem('telenor_cal_events',JSON.stringify(ev));}
+
+function selectType(t){
+  selectedType=t;
+  const map={HP:'hp',HC:'hc',VULA:'vula',TRAD:'trad',ANNET:'annet'};
+  Object.entries(map).forEach(([k,v])=>{
+    const btn=document.getElementById('type-'+v);
+    btn.className='type-btn'+(t===k?' sel-'+v:'');
+  });
+}
+
+function renderCal(){
+  const months=['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'];
+  document.getElementById('cal-month-label').textContent=months[calMonth]+' '+calYear;
+  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+  ['Ma','Ti','On','To','Fr','Lø','Sø'].forEach(d=>{
+    const el=document.createElement('div');el.className='cal-day-name';el.textContent=d;grid.appendChild(el);
+  });
+  const first=new Date(calYear,calMonth,1);
+  let startDow=first.getDay(); if(startDow===0)startDow=7;
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+  const today=new Date();
+  const events=getEvents();
+  const totalCells=Math.ceil((startDow-1+daysInMonth)/7)*7;
+  for(let i=0;i<totalCells;i++){
+    let day,m2=calMonth,y2=calYear,other=false;
+    if(i<startDow-1){day=daysInPrev-(startDow-2-i);m2=calMonth-1;if(m2<0){m2=11;y2--;}other=true;}
+    else{day=i-(startDow-1)+1;if(day>daysInMonth){day-=daysInMonth;m2=calMonth+1;if(m2>11){m2=0;y2++;}other=true;}}
+    const dateStr=`${y2}-${String(m2+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday=day===today.getDate()&&m2===today.getMonth()&&y2===today.getFullYear()&&!other;
+    const isSel=dateStr===selectedDate;
+    const dayEvs=events.filter(e=>e.date===dateStr);
+    const el=document.createElement('div');
+    el.className='cal-day'+(other?' other-month':'')+(isToday?' today':'')+(isSel?' selected':'');
+    const dots=dayEvs.map(e=>{
+      const cls=e.type==='HP'?'dot-hp':e.type==='HC'?'dot-hc':e.type==='VULA'?'dot-vula':e.type==='TRAD'?'dot-trad':'dot-note';
+      return `<span class="cal-dot ${cls}"></span>`;
+    }).join('');
+    el.innerHTML=`<div class="cal-day-num">${day}</div><div class="cal-dot-row">${dots}</div>`;
+    el.onclick=()=>selectDate(dateStr);
+    grid.appendChild(el);
+  }
+  renderEventsList();
+}
+
+function changeMonth(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCal();}
+
+function selectDate(ds){
+  selectedDate=ds;
+  document.getElementById('ev-date').value=ds;
+  renderCal();
+}
+
+function saveEvent(){
+  const date=document.getElementById('ev-date').value;
+  const kunde=document.getElementById('ev-kunde').value.trim();
+  const hvem=document.getElementById('ev-hvem').value.trim();
+  const internett=document.getElementById('ev-internett').value.trim();
+  const notat=document.getElementById('ev-notat').value.trim();
+  if(!date){alert('Velg en dato');return;}
+  if(!kunde&&!notat){alert('Skriv inn kundenavn eller et notat');return;}
+  const events=getEvents();
+  events.push({date,type:selectedType||'ANNET',kunde,hvem,internett,notat,id:Date.now()});
+  saveEvents(events);
+  document.getElementById('ev-kunde').value='';
+  document.getElementById('ev-hvem').value='';
+  document.getElementById('ev-internett').value='';
+  document.getElementById('ev-notat').value='';
+  selectedType=null;
+  ['hp','hc','vula','trad','annet'].forEach(x=>document.getElementById('type-'+x).className='type-btn');
+  renderCal();
+}
+
+function deleteEvent(id){saveEvents(getEvents().filter(e=>e.id!==id));renderCal();}
+
+function renderEventsList(){
+  const events=getEvents();
+  const label=document.getElementById('cal-events-label');
+  const list=document.getElementById('cal-events-list');
+  let filtered,title;
+  if(selectedDate){
+    filtered=events.filter(e=>e.date===selectedDate);
+    const d=new Date(selectedDate+'T12:00:00');
+    title=d.toLocaleDateString('nb-NO',{weekday:'long',day:'numeric',month:'long'});
+  } else {
+    filtered=events.filter(e=>e.date.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`)).sort((a,b)=>a.date.localeCompare(b.date));
+    title='Denne måneden';
+  }
+  label.textContent=title;
+  list.innerHTML='';
+  if(filtered.length===0){list.innerHTML='<div class="no-events">Ingen oppfølginger</div>';return;}
+  filtered.forEach(e=>{
+    const typeLabel=e.type==='HP'?'📡 HP':e.type==='HC'?'🏠 HC':e.type==='VULA'?'🔌 VULA':e.type==='TRAD'?'📶 Trådløs':'📝 Notat';
+    const typeCls=e.type==='HP'?'ev-hp':e.type==='HC'?'ev-hc':e.type==='VULA'?'ev-vula':e.type==='TRAD'?'ev-trad':'ev-annet';
+    const d=document.createElement('div'); d.className='event-item';
+    d.innerHTML=`
+      <div class="event-item-header">
+        <div class="event-item-title">${e.kunde||'Notat'}</div>
+        <span class="event-type-badge ${typeCls}">${typeLabel}</span>
+      </div>
+      ${e.hvem?`<div class="event-item-detail">👤 Møtte: ${e.hvem}</div>`:''}
+      ${e.internett?`<div class="event-item-detail">🌐 Styrer internett: ${e.internett}</div>`:''}
+      ${e.notat?`<div class="event-item-detail" style="margin-top:4px;">📝 ${e.notat}</div>`:''}
+      ${!selectedDate?`<div class="event-item-detail" style="color:#888;font-size:12px;margin-top:4px;">📅 ${new Date(e.date+'T12:00:00').toLocaleDateString('nb-NO',{weekday:'short',day:'numeric',month:'short'})}</div>`:''}
+      <div style="margin-top:8px;"><button class="event-del" onclick="deleteEvent(${e.id})">🗑 Slett</button></div>`;
+    list.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.getElementById('ev-date').value = new Date().toISOString().split('T')[0];
+renderBehov();
+renderFiber();
+calcMobil();
+renderSikre();
+renderObjList();
+renderCal();
+</script>
+</body>
+</html>
