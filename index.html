@@ -245,31 +245,20 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
 <div id="page-mobil" class="page">
 
   <div class="card">
-    <div class="card-title">Kundens profil</div>
-    <div class="input-row">
-      <label>Alder</label>
-      <select id="mob-alder" onchange="calcMobil()" style="width:160px;">
-        <option value="adult">Over 30 år</option>
-        <option value="youth">Under 30 år</option>
-        <option value="child">Under 13 år</option>
-      </select>
-    </div>
+    <div class="card-title">Antall linjer</div>
     <div class="input-row">
       <label>Antall linjer</label>
-      <div class="right"><input type="number" id="mob-linjer" value="1" min="1" max="10" style="width:70px;" oninput="calcMobil()"></div>
-    </div>
-    <div class="input-row">
-      <label>Datapakke</label>
-      <select id="mob-data" onchange="calcMobil()" style="width:160px;">
-        <option value="10gb">10 GB</option>
-        <option value="unlimited">Ubegrenset</option>
-      </select>
+      <div class="right">
+        <button class="btn btn-gray btn-sm" onclick="adjustLinjer(-1)" style="padding:7px 14px;font-size:16px;">−</button>
+        <span id="mob-linjer-display" style="font-size:18px;font-weight:700;min-width:28px;text-align:center;">1</span>
+        <button class="btn btn-blue btn-sm" onclick="adjustLinjer(1)" style="padding:7px 14px;font-size:16px;">+</button>
+      </div>
     </div>
   </div>
 
+  <div id="mob-linjer-liste"></div>
+
   <div class="grid2">
-    <div class="metric"><div class="metric-label">1. linje</div><div class="metric-value mv-blue" id="mob-price1">—</div></div>
-    <div class="metric"><div class="metric-label">Ekstra linje</div><div class="metric-value mv-blue" id="mob-price-extra">—</div></div>
     <div class="metric"><div class="metric-label">Totalt/mnd</div><div class="metric-value mv-green" id="mob-total">—</div></div>
     <div class="metric"><div class="metric-label">Totalt/år</div><div class="metric-value mv-green" id="mob-year">—</div></div>
   </div>
@@ -278,7 +267,7 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
   <div class="value-box" id="mob-value-box"></div>
 
   <div class="card">
-    <div class="card-title blue">Inkludert i abonnementet</div>
+    <div class="card-title blue">Inkludert – ubegrenset</div>
     <div id="mob-inkludert-liste"></div>
     <p style="font-size:12px;color:#aaa;margin-top:10px;">📵 Ingen bindingstid på mobilabonnement.</p>
   </div>
@@ -526,40 +515,103 @@ function showPage(id,el){
 // MOBIL
 // ═══════════════════════════════════════════════════════════
 const MOB_SERVICES_UNLIMITED = [
-  {name:'Nettslett',desc:'Slett telefon eksternt ved tyveri',val:79},
-  {name:'Min Sky',desc:'Ubegrenset sikkerhetskopi av bilder',val:99},
-  {name:'Se Hvem',desc:'Identifiserer ukjente innringere',val:49},
+  {name:'Nettslett',desc:'Slett/lås telefon eksternt ved tyveri',val:79},
+  {name:'Min Sky',desc:'Ubegrenset sikkerhetskopi av bilder og kontakter',val:99},
+  {name:'Se Hvem',desc:'Identifiserer ukjente innringere og svindlere',val:49},
   {name:'BankID på mobil',desc:'Raskeste innlogging til nettbank',val:39},
   {name:'5G + eSIM',desc:'Inkludert uten tillegg',val:49},
 ];
-const MOB_SERVICES_10GB = [
-  {name:'Se Hvem',desc:'Identifiserer ukjente innringere',val:49},
-  {name:'5G + eSIM',desc:'Inkludert uten tillegg',val:49},
-  {name:'Fri tale og SMS',desc:'Ubegrenset i Norge',val:0},
-];
+
+let mobLinjer = 1;
+// linjeData: array of {age: 'adult'|'youth'|'child', pakke: 'unlimited'|'10gb'}
+let linjeData = [{age:'adult', pakke:'unlimited'}];
+
+function adjustLinjer(delta){
+  mobLinjer = Math.max(1, Math.min(10, mobLinjer + delta));
+  while(linjeData.length < mobLinjer) linjeData.push({age:'adult', pakke:'unlimited'});
+  linjeData = linjeData.slice(0, mobLinjer);
+  document.getElementById('mob-linjer-display').textContent = mobLinjer;
+  renderLinjeKort();
+  calcMobil();
+}
+
+function setLinjeAge(i, val){ linjeData[i].age = val; calcMobil(); }
+function setLinjePakke(i, val){ linjeData[i].pakke = val; calcMobil(); }
+
+function linjePris(i, age, pakke){
+  if(pakke === 'unlimited'){
+    if(i === 0 && age !== 'youth' && age !== 'child') return 399; // 1. linje, over 30
+    return 299; // familie, under 30, eller barn – alltid 299 på ubegrenset
+  } else { // 10 GB
+    if(age === 'child') return 49;
+    if(age === 'youth') return 199;
+    return 249;
+  }
+}
+
+function renderLinjeKort(){
+  const el = document.getElementById('mob-linjer-liste'); el.innerHTML='';
+  linjeData.forEach((l,i)=>{
+    const pris = linjePris(i, l.age, l.pakke);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.marginBottom = '10px';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-size:13px;font-weight:700;color:#003d7a;">${i===0?'1. linje':'Linje '+(i+1)+' (familie)'}</span>
+        <span style="font-size:18px;font-weight:800;color:#005bac;">${fmt(pris)}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:11px;color:#888;font-weight:600;margin-bottom:4px;">ALDER</div>
+          <select onchange="setLinjeAge(${i},this.value)" style="font-size:13px;padding:7px 10px;">
+            <option value="adult" ${l.age==='adult'?'selected':''}>Over 30 år</option>
+            <option value="youth" ${l.age==='youth'?'selected':''}>Under 30 år</option>
+            <option value="child" ${l.age==='child'?'selected':''}>Under 13 år</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#888;font-weight:600;margin-bottom:4px;">PAKKE</div>
+          <select onchange="setLinjePakke(${i},this.value)" style="font-size:13px;padding:7px 10px;">
+            <option value="unlimited" ${l.pakke==='unlimited'?'selected':''}>Ubegrenset</option>
+            <option value="10gb" ${l.pakke==='10gb'?'selected':''}>10 GB</option>
+          </select>
+        </div>
+      </div>`;
+    el.appendChild(card);
+  });
+}
 
 function calcMobil(){
-  const al = document.getElementById('mob-alder').value;
-  const lj = parseInt(document.getElementById('mob-linjer').value)||1;
-  const da = document.getElementById('mob-data').value;
-  const ko = parseInt(document.getElementById('mob-konkurrent').value)||0;
-  let p1,pX;
-  if(da==='unlimited'){p1=399;pX=299;}
-  else{
-    if(al==='child'){p1=49;pX=49;}
-    else if(al==='youth'){p1=199;pX=199;}
-    else{p1=249;pX=249;}
-  }
-  const tot = p1 + Math.max(0,lj-1)*pX;
-  document.getElementById('mob-price1').textContent = fmt(p1);
-  document.getElementById('mob-price-extra').textContent = lj>1 ? fmt(pX) : '—';
+  // Beregn totalpris
+  let tot = 0;
+  linjeData.forEach((l,i)=>{ tot += linjePris(i, l.age, l.pakke); });
   document.getElementById('mob-total').textContent = fmt(tot);
   document.getElementById('mob-year').textContent = fmt(tot*12);
 
+  // Verdikalkulator – vis for ubegrenset-linjer
+  const harUnlimited = linjeData.some(l=>l.pakke==='unlimited');
+  const vbEl = document.getElementById('mob-value-box');
+  if(harUnlimited){
+    const totalVal = MOB_SERVICES_UNLIMITED.reduce((s,x)=>s+x.val,0);
+    const rows = MOB_SERVICES_UNLIMITED.map(s=>
+      `<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">~${s.val} kr verdi</span></div>`
+    ).join('');
+    vbEl.innerHTML = `
+      <div class="value-box-title">💎 Inkludert i ubegrenset-abonnement</div>
+      ${rows}
+      <div class="value-total-row">
+        <span class="value-total-label">Samlet verdi inkludert</span>
+        <span class="value-total-num">~${totalVal} kr/mnd</span>
+      </div>`;
+    vbEl.style.display='block';
+  } else {
+    vbEl.style.display='none';
+  }
+
   // Inkludert-liste
-  const services = da==='unlimited' ? MOB_SERVICES_UNLIMITED : MOB_SERVICES_10GB;
   const li = document.getElementById('mob-inkludert-liste'); li.innerHTML='';
-  services.forEach(s=>{
+  MOB_SERVICES_UNLIMITED.forEach(s=>{
     const d=document.createElement('div');
     d.style.cssText='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid #f0f0f0;';
     d.innerHTML=`<span style="color:#1D9E75;font-size:15px;flex-shrink:0;">✓</span>
@@ -568,42 +620,13 @@ function calcMobil(){
     li.appendChild(d);
   });
 
-  // VERDIKALKULATOR
-  const vbEl = document.getElementById('mob-value-box');
-  if(da==='unlimited'){
-    const totalVal = MOB_SERVICES_UNLIMITED.reduce((s,x)=>s+x.val,0);
-    const rows = MOB_SERVICES_UNLIMITED.map(s=>
-      `<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">~${s.val} kr verdi</span></div>`
-    ).join('');
-    vbEl.innerHTML = `
-      <div class="value-box-title">💎 Totalverdi du får med ubegrenset</div>
-      ${rows}
-      <div class="value-total-row">
-        <span class="value-total-label">Samlet verdi inkludert</span>
-        <span class="value-total-num">~${totalVal} kr/mnd</span>
-      </div>
-      <div class="value-you-pay">
-        <span class="label">Du betaler kun</span>
-        <span class="num">${fmt(p1)}/mnd</span>
-      </div>`;
-  } else {
-    vbEl.innerHTML = `
-      <div class="value-box-title">💎 Hva du får med 10 GB</div>
-      <div class="value-row"><span class="vr-name">Se Hvem (identifiserer svindlere)</span><span class="vr-price">~49 kr verdi</span></div>
-      <div class="value-row"><span class="vr-name">5G + eSIM inkludert</span><span class="vr-price">~49 kr verdi</span></div>
-      <div class="value-row"><span class="vr-name">Norges beste mobilnett</span><span class="vr-price">Priceless</span></div>
-      <div class="value-total-row">
-        <span class="value-total-label">Du betaler</span>
-        <span class="value-total-num">${fmt(p1)}/mnd</span>
-      </div>`;
-  }
-
   // Konkurrent
+  const ko = parseInt(document.getElementById('mob-konkurrent').value)||0;
   const s = document.getElementById('mob-sammenlign');
   if(ko>0){
     const d=ko-tot;
-    if(d>0) s.innerHTML=`<div class="banner banner-green" style="margin-top:10px;"><div class="banner-title" style="color:#085041;">Sparer ${fmt(d)}/mnd 🎉</div><div class="banner-sub">Det er <strong>${fmt(d*12)}</strong> i året – og de får mer inkludert.</div></div>`;
-    else if(d<0) s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Telenor er ${fmt(Math.abs(d))}/mnd mer</div><div class="banner-sub">Men: inkluderte tjenester er verdt ~${da==='unlimited'?'315':'98'} kr/mnd ekstra. Vis verdikalkulatoren.</div></div>`;
+    if(d>0) s.innerHTML=`<div class="banner banner-green" style="margin-top:10px;"><div class="banner-title" style="color:#085041;">Sparer ${fmt(d)}/mnd 🎉</div><div class="banner-sub">Det er <strong>${fmt(d*12)}</strong> i året.</div></div>`;
+    else if(d<0) s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Telenor er ${fmt(Math.abs(d))}/mnd mer</div><div class="banner-sub">Vis verdikalkulatoren – inkluderte tjenester gir ekstra verdi.</div></div>`;
     else s.innerHTML=`<div class="banner banner-blue" style="margin-top:10px;"><div class="banner-title" style="color:#003d7a;">Samme pris – men mer igjen for pengene</div></div>`;
   } else {
     s.innerHTML='';
@@ -835,11 +858,42 @@ function renderSikre(){
 // BEHOVSAVDEKKER
 // ═══════════════════════════════════════════════════════════
 const QUESTIONS=[
-  {q:'Hva er viktigst for kunden?',sub:'Velg det som passer best',answers:['Lavest mulig pris','Best mulig dekning','Trygghet og sikkerhet','Alt i ett – enkel løsning'],key:'priority'},
-  {q:'Hvor bor / ferdes kunden?',sub:'',answers:['Storby / tettsted','Distriktet / landsbygd','Reiser mye i Norge','Hytte / kyst / til sjøs'],key:'location'},
-  {q:'Hvem er abonnementet for?',sub:'',answers:['Bare meg selv','Meg og partner','Familie med barn','Familie med tenåringer'],key:'family'},
-  {q:'Hvilke produkter er aktuelt?',sub:'',answers:['Bare mobil','Bare fiber/TV','Mobil + fiber','Sikre – hjemmesikkerhet'],key:'product'},
-  {q:'Hva har kunden i dag?',sub:'',answers:['Telia','Ice / billigoperatør','Altibox','Annet / vet ikke'],key:'current'},
+  {
+    q:'Hva er viktigst for kunden?',
+    sub:'Velg det som passer best',
+    answers:['Lavest mulig totalpris','Best mulig dekning','Trygghet og sikkerhet på nett','Enkel løsning – alt på én regning'],
+    key:'priority'
+  },
+  {
+    q:'Hvem er husstanden?',
+    sub:'',
+    answers:['Enslig / singel','Par uten barn','Familie med barn under 13','Familie med tenåringer (13–30)'],
+    key:'family'
+  },
+  {
+    q:'Hvor bor / ferdes kunden?',
+    sub:'',
+    answers:['Storby / tettsted','Distriktet / landsbygd','Reiser mye i jobb','Hytte, kyst eller til sjøs'],
+    key:'location'
+  },
+  {
+    q:'Hva har kunden i dag?',
+    sub:'Nåværende leverandør',
+    answers:['Telia','Ice / billigoperatør','Altibox / lokal fiberleverandør','Telenor allerede'],
+    key:'current'
+  },
+  {
+    q:'Bruker kunden strømmetjenester?',
+    sub:'',
+    answers:['Ja, flere (Netflix, Max, Disney+ osv.)','Bare 1–2 tjenester','Bare NRK og lineær-TV','Vet ikke / usikker'],
+    key:'streaming'
+  },
+  {
+    q:'Hvilke produkter er aktuelt?',
+    sub:'',
+    answers:['Bare mobil','Bare fiber + TV','Mobil + fiber + TV','Sikre hjemmenett'],
+    key:'product'
+  },
 ];
 let bA={},bStep=0;
 
@@ -875,79 +929,144 @@ function resetBehov(){bA={};bStep=0;document.getElementById('behov-questions').s
 function showBehovResult(){
   document.getElementById('behov-questions').style.display='none';
   document.getElementById('behov-result').style.display='block';
-  const a=bA; let rMain='',rSub='',tags=[];
+  const a=bA;
+  const anbefalinger=[];
+  const args=[];
 
-  if(a.product==='Sikre – hjemmesikkerhet'){
-    rMain='Sikre hjemmenett – 200 kr/mnd';
-    rSub=`Totalverdi ~${SIKRE_TOTAL_VAL} kr/mnd. Inkluderer Nettvern+, ID-vakt, Kredittvakt og Svindelforsikring for hele husstanden. Ingen bindingstid.`;
-    tags=['200 kr/mnd','Ingen binding','~'+SIKRE_TOTAL_VAL+' kr verdi','ID-vakt','Kredittvakt'];
-  } else if(a.product==='Bare mobil'||a.product==='Mobil + fiber'){
-    if(a.family==='Familie med barn'){
-      rMain='Ubegrenset 399 kr + barn 49 kr';
-      rSub='Første linje ubegrenset 399 kr, ekstra linjer 299 kr, barn under 13 år kun 49 kr. Ingen bindingstid.';
-      tags=['399 kr – 1. linje','299 kr – familie','49 kr – under 13 år'];
-    } else if(a.family==='Familie med tenåringer'){
-      rMain='Ubegrenset + ungdom 199 kr';
-      rSub='Første linje ubegrenset 399 kr, under 30 år: 10 GB for 199 kr/mnd. Ingen bindingstid.';
-      tags=['399 kr ubegrenset','199 kr under 30 år'];
-    } else if(a.priority==='Lavest mulig pris'){
-      rMain='10 GB for 249 kr/mnd';
-      rSub='Best dekning til konkurransedyktig pris. Ingen bindingstid.';
-      tags=['249 kr/mnd','10 GB','Ingen binding'];
+  // ── MOBIL ──
+  const harMobil = a.product==='Bare mobil'||a.product==='Mobil + fiber + TV';
+  if(harMobil){
+    if(a.family==='Familie med barn under 13'){
+      anbefalinger.push({title:'Ubegrenset + barn', price:'399 + 299 + 49 kr', desc:'1. linje ubegrenset 399 kr, ekstra familielinjer 299 kr, barn under 13 år kun 49 kr/mnd på 10 GB. Ingen bindingstid.'});
+      args.push('Barn under 13 år: 10 GB for kun 49 kr/mnd – spar masse vs. barnepakker hos andre.');
+    } else if(a.family==='Familie med tenåringer (13–30)'){
+      anbefalinger.push({title:'Ubegrenset familie', price:'399 + 299 kr', desc:'1. linje 399 kr, øvrige familielinjer 299 kr. Under 30 år får 10 GB for 199 kr. Ingen bindingstid.'});
+      args.push('Under 30 år: 10 GB for 199 kr/mnd eller ubegrenset for 299 kr – samme pris som familielinje.');
+    } else if(a.priority==='Lavest mulig totalpris'){
+      anbefalinger.push({title:'10 GB – 249 kr', price:'249 kr/mnd', desc:'Over 30 år, 10 GB, Telenors beste nett. Ingen bindingstid. Inkluderer Se Hvem og 5G.'});
     } else {
-      rMain='Ubegrenset data – 399 kr/mnd';
-      rSub='Inkluderer Nettslett, Min Sky, Se Hvem og BankID. Norges beste dekning. Ingen bindingstid.';
-      tags=['399 kr/mnd','Ubegrenset','Ingen binding','Nettslett','Min Sky'];
+      anbefalinger.push({title:'Ubegrenset data', price:'399 kr/mnd', desc:'Inkluderer Nettslett, Min Sky, Se Hvem og BankID på mobil. Norges største mobilnett (5 000+ basestasjoner). Ingen bindingstid.'});
+      args.push('Inkluderte tjenester er verdt ~315 kr/mnd – du får mye mer enn bare data.');
     }
   }
-  if(a.product==='Bare fiber/TV'||a.product==='Mobil + fiber'){
-    rMain=(rMain?rMain+' + ':'')+'Fiber 500/500 + TV 1 197 kr';
-    rSub=(rSub?rSub+' ':'')+'TV-pakken inkluderer 7 strømmetjenester (samlet verdi '+ALL_STREAMING_VALUE+' kr/mnd). Ny portabel TV-boks. Bindingstid på fiber og TV.';
-    tags=[...tags,'Fiber 500/500','7 strømmetjenester',''+ALL_STREAMING_VALUE+' kr verdi','Portabel TV-boks'];
-  }
-  if(a.location==='Distriktet / landsbygd'||a.location==='Hytte / kyst / til sjøs'){
-    rSub+=' Telenor er eneste reelle valg utenfor by – Ice fungerer dårlig.';
-    tags.push('Best dekning i distriktet');
-  }
-  if(!rMain) rMain='Telenor passer for denne kunden';
 
-  document.getElementById('recommendation-box').innerHTML=`
-    <div class="recommendation">
+  // ── FIBER ──
+  const harFiber = a.product==='Bare fiber + TV'||a.product==='Mobil + fiber + TV';
+  if(harFiber){
+    const streamingArg = a.streaming==='Ja, flere (Netflix, Max, Disney+ osv.)'
+      ? 'Kunden betaler trolig 500–900 kr/mnd for strømmetjenester separat. Med Telenor TV-pakke (7 tjenester, verdi 993 kr) er totalen nesten alltid lavere enn Altibox + tjenestene separat.'
+      : a.streaming==='Bare 1–2 tjenester'
+      ? 'Sjekk fiberkalkulatoren – selv med 1–2 tjenester er Telenor ofte billigere totalt enn Altibox 899 kr + tjenestene separat.'
+      : 'Telenor TV-pakke inkluderer 7 strømmetjenester. Hvis kunden starter noen av dem, er Telenor raskere billigere.';
+    anbefalinger.push({title:'Fiber 500/500 + TV-pakke', price:'1 197 kr/mnd', desc:'Inkluderer Netflix, Max, Disney+, Viaplay, TV 2 Play, Apple TV+ og Sky Showtime (verdi 993 kr/mnd). Portabel TV-boks. Bindingstid gjelder.'});
+    args.push(streamingArg);
+    args.push('Altibox TV-boks er låst til huset. Telenors TV-boks er portabel – fungerer hjemme, på hytta og hos besteforeldrene.');
+  }
+
+  // ── SIKRE ──
+  if(a.product==='Sikre hjemmenett'||a.priority==='Trygghet og sikkerhet på nett'||a.family==='Familie med barn under 13'){
+    anbefalinger.push({title:'Sikre hjemmenett', price:'200 kr/mnd', desc:`Totalverdi ~${SIKRE_TOTAL_VAL} kr/mnd: Nettvern+, ID-vakt, Kredittvakt, Svindelforsikring, Se Hvem og Min Sky. Hele husstanden. Ingen bindingstid.`});
+    args.push(`Sikre gir ~${SIKRE_TOTAL_VAL} kr verdi for 200 kr/mnd – ingen binding, prøv en måned.`);
+  }
+
+  // ── LOKASJONSARGUMENTER ──
+  if(a.location==='Distriktet / landsbygd'||a.location==='Hytte, kyst eller til sjøs'||a.location==='Reiser mye i jobb'){
+    args.push('Telenor har over 5 000 basestasjoner i Norge – ca. 2 000 flere enn Telia. Best i distrikt, fjell og til sjøs.');
+    args.push('Ice bruker Telenors nett som gjest utenfor eget nett. Telenors egne kunder har alltid prioritet foran Ice-kunder.');
+  }
+
+  // ── KONKURRENT-ARGUMENTER ──
+  if(a.current==='Telia') args.push('Telenor inkluderer Nettslett, Min Sky og Se Hvem i ubegrenset-pakken. Telia har ikke tilsvarende inkludert.');
+  if(a.current==='Ice / billigoperatør') args.push('Ice er billigere, men som gjestekunde på Telenors nett (fra jan 2025) har Ice lavere prioritet. Utenfor eget nett gjelder ikke Ice sine tilleggstjenester.');
+  if(a.current==='Altibox / lokal fiberleverandør') args.push('Bruk fiberkalkulatoren – legg inn strømmetjenestene kunden betaler i dag og vis reell totalpris.');
+  if(a.current==='Telenor allerede') args.push('Kunden er allerede Telenor-kunde. Fokuser på oppgradering til ubegrenset, Sikre hjemmenett, eller fiber om de ikke har det.');
+
+  if(anbefalinger.length===0) anbefalinger.push({title:'Telenor passer',price:'',desc:'Fyll ut alle spørsmål for en presis anbefaling.'});
+
+  const recHTML = anbefalinger.map(r=>`
+    <div class="recommendation" style="margin-bottom:10px;">
       <div class="rec-title">Anbefaling</div>
-      <div class="rec-main">${rMain}</div>
-      <div class="rec-sub">${rSub}</div>
-      <div class="rec-tags">${tags.map(t=>`<span class="rec-tag">${t}</span>`).join('')}</div>
-    </div>`;
+      <div class="rec-main">${r.title}${r.price?' – '+r.price:''}</div>
+      <div class="rec-sub">${r.desc}</div>
+    </div>`).join('');
 
-  let args=[];
-  if(a.current==='Telia') args.push('Telia taper klart på distriktsdekning – Telenor dekker 99,9% av befolkningen.','Telenor inkluderer Nettslett, Min Sky og Se Hvem – Telia har ikke tilsvarende.');
-  if(a.current==='Ice / billigoperatør') args.push('Ice har eget nett men det fungerer svært dårlig utenfor by. Utenfor Ice-dekning faller kunden tilbake på Telenors nett som andrerangert.','Ice inkluderer ikke Nettslett, Min Sky eller Se Hvem.');
-  if(a.current==='Altibox') args.push('Altibox TV-boks er låst til huset – Telenors nye TV-boks kan tas med overalt.','Legg strømmetjenestene kunden har inn i fiberkalkulatoren – Telenor er ofte billigere totalt.');
-  if(a.priority==='Trygghet og sikkerhet') args.push('Telenor inkluderer Nettslett, Min Sky og Se Hvem i abonnementet.','Sikre hjemmenett gir full beskyttelse mot ID-tyveri – verdi ~'+SIKRE_TOTAL_VAL+' kr/mnd for kun 200 kr.');
+  document.getElementById('recommendation-box').innerHTML = recHTML;
+
   if(args.length>0){
     document.getElementById('result-details').innerHTML=`
       <div class="card">
-        <div class="card-title">Gode argumenter</div>
-        ${args.map(a=>`<div style="display:flex;gap:8px;padding:8px 0;border-bottom:0.5px solid #f0f0f0;font-size:14px;line-height:1.4;"><span style="color:#005bac;flex-shrink:0;font-weight:700;">→</span>${a}</div>`).join('')}
+        <div class="card-title blue">Salgsargumenter for denne kunden</div>
+        ${args.map(a=>`<div style="display:flex;gap:8px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;font-size:14px;line-height:1.5;"><span style="color:#005bac;flex-shrink:0;font-weight:700;margin-top:1px;">→</span><span>${a}</span></div>`).join('')}
       </div>`;
+  } else {
+    document.getElementById('result-details').innerHTML='';
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// INNVENDINGER
+// INNVENDINGER – faktagrunnlag fra telenor.no, nkom.no, tek.no
 // ═══════════════════════════════════════════════════════════
 const OBJECTIONS=[
-  {q:'"Telia er billigere"',a:'På listepriser stemmer det for noen planer. Men mine priser via salgskanal er 399 kr for ubegrenset – Telia tar 499 kr. Og Telenor inkluderer Nettslett, Min Sky og Se Hvem som Telia ikke har.',tip:'Vis mobilkalkulatoren – sammenlign konkret. Verdiargumentet vinner som regel.'},
-  {q:'"Ice er mye billigere"',a:'Ice har sitt eget nett, men det fungerer svært dårlig utenfor byene. Ice-kunder er <strong>andrerangert</strong> på Telenors basestasjoner – Telenor-kunder går alltid foran. Utenfor by er forskjellen enorm.',tip:'Spør om hytte, båt eller friluftsliv – svaret avgjør argumentet.'},
-  {q:'"Altibox er billigere på fiber"',a:'Altibox koster 899 kr, men inkluderer ingen strømmetjenester. Med Telenors TV-pakke får kunden Netflix, Max, Disney+, Viaplay, TV 2 Play, Apple TV+ og Sky Showtime – samlet verdi 993 kr/mnd.',tip:'Bruk fiberkalkulatoren – la kunden se den reelle totalprisen selv.'},
-  {q:'"Jeg har bindingstid"',a:'Mange operatører har lavere bruddgebyr enn folk tror. Hva er du bundet til og ut når? Vi kan ofte hjelpe med dekning av bruddgebyret ved overgang til Telenor.',tip:'Finn ut nøyaktig bindingstid og dato – regn på bruddgebyret.'},
-  {q:'"Jeg er fornøyd med det jeg har"',a:'Det er bra! Men du er fornøyd med det du kjenner. Telenor gir deg det samme pluss Nettslett, Min Sky og Se Hvem – og sannsynligvis bedre dekning og mer verdi for pengene. Ingen bindingstid på mobil.',tip:'Plant frøet og avtal konkret oppfølging. Registrer i kalender.'},
-  {q:'"Jeg må tenke på det"',a:'Absolutt. Hva er du usikker på – prisen, dekningen eller noe annet? Da kan jeg gi deg akkurat den informasjonen du trenger for å ta en god avgjørelse.',tip:'Finn den ekte innvendingen – det er sjelden hele svaret. Avtal dato for oppfølging.'},
-  {q:'"TV-boksen er låst til huset"',a:'Den gamle boksen var det – den nye Telenor TV-boksen fungerer som Apple TV og kan tas med overalt. Hjemme, på hytta, hos besteforeldrene. Altibox sin boks er fortsatt låst til huset.',tip:'Fremhev «portabel» – det er et unikt og konkret salgsargument.'},
-  {q:'"Vil ikke ha bindingstid"',a:'Mobilabonnement og Sikre har <strong>ingen bindingstid</strong> – du kan avslutte når du vil. Fiber og TV har bindingstid, men det er standard i bransjen og gir deg den beste prisen over tid.',tip:'Vær tydelig: mobil = ingen binding. Fiber/TV = binding. Ikke bland kortene.'},
-  {q:'"Dekningen er like god overalt"',a:'I store byer er det ganske likt. Men i distriktene, fjellet og til sjøs er Telenor suverent best. Ice fungerer dårlig utenfor by. Telia taper klart i distrikt.',tip:'Spør om hytte, båt eller friluftsliv – svaret avgjør tyngden av argumentet.'},
-  {q:'"Jeg byttet akkurat"',a:'Forstår det. Når går bindingstiden ut? Da kan vi ta en prat – jeg noterer deg og tar kontakt på riktig tidspunkt. Du skal slippe å tenke på det selv.',tip:'Ta kontaktinfo og legg inn nøyaktig dato i kalender – dette er varm lead.'},
-  {q:'"Trenger ikke Sikre – har ingenting å skjule"',a:'Sikre handler ikke om hva du skjuler – det handler om at kriminelle kan misbruke din identitet til å ta opp lån, opprette kontoer eller tømme bankkontoer. ID-tyveri rammer tilfeldige folk.',tip:'«Du får '+SIKRE_TOTAL_VAL+' kr i verdi for 200 kr/mnd. Ingen binding – prøv en måned.»'},
+  {
+    q:'"Telia er billigere"',
+    a:'Listepriser varierer, men priser via salgskanal er 399 kr for ubegrenset data – Telia og andre kan ligge tilsvarende. Det viktige er hva man <em>faktisk</em> får: Telenor inkluderer Nettslett, Min Sky og Se Hvem i ubegrenset-pakken. Telenor har over <strong>5 000 basestasjoner i Norge</strong> – ca. 2 000 flere enn Telia – og er dokumentert best i distrikt, fjell og til sjøs.',
+    tip:'Vis mobilkalkulatoren med verdikalkulatoren åpen. Sammenlign inkluderte tjenester – ikke bare kronepris.'
+  },
+  {
+    q:'"Ice er mye billigere"',
+    a:'Ice har eget nett (Ice+) som dekker ca. <strong>95,6 % av befolkningen</strong>. Utenfor Ice+ bruker de nasjonal gjesting – fra januar 2025 på <strong>Telenors nett</strong> (tidligere Telia). Som gjestekunde har Ice-kunder lavere prioritet enn Telenors egne kunder. Ice sin tilleggstjeneste «Data Frihet» fungerer heller ikke på gjestenettet. Utenfor tettbygde strøk, på hytta eller til sjøs merkes forskjellen tydelig.',
+    tip:'Spør om hytte, friluftsliv eller pendling. Er svaret ja, er dekningsforskjellen avgjørende.'
+  },
+  {
+    q:'"Altibox er billigere på fiber"',
+    a:'Altibox tilbudspris er 899 kr/mnd, men det inkluderer <strong>ingen strømmetjenester</strong>. Telenors TV-pakke inkluderer Netflix, Max, Disney+, Viaplay, TV 2 Play, Apple TV+ og Sky Showtime – samlet markedsverdi <strong>993 kr/mnd</strong>. Legg på strømmetjenestene kunden allerede betaler, og Telenor er nesten alltid billigere totalt.',
+    tip:'Bruk fiberkalkulatoren. La kunden selv slå på tjenestene de har – de ser summen selv.'
+  },
+  {
+    q:'"Jeg har bindingstid"',
+    a:'Finn ut nøyaktig when bindingstiden løper ut – det er det første steget. Noen operatører har lavere bruddgebyr enn kunden tror. Hvis kunden er nær utløp, er det klokt å avgjøre nå og bytte ved utløp. Telenor tilbyr i noen tilfeller kompensasjon for bruddgebyr – spør din leder.',
+    tip:'Registrer nøyaktig utløpsdato i kalender. Ta kontakt to uker før utløp.'
+  },
+  {
+    q:'"Jeg er fornøyd med det jeg har"',
+    a:'Respektér det – og bruk det som åpning: «Bra! Men vet du hva du faktisk betaler totalt for alle strømmetjenestene dine?» Vis fiberkalkulatoren hvis de har Altibox eller lignende. For mobil: vis at Telenor inkluderer Nettslett, Min Sky og Se Hvem uten tilleggskostnad. Ingen bindingstid på mobil gjør byttet risikofritt.',
+    tip:'Plant frøet, ikke press. Avtal oppfølging og noter i kalender.'
+  },
+  {
+    q:'"Jeg må tenke på det"',
+    a:'«Absolutt – hva er du usikker på?» De aller fleste sier dette av tre grunner: 1) Prisen, 2) En annen i husstanden bestemmer, 3) De er ikke helt overbevist om dekning eller verdi. Finn årsaken og løs den konkret. Avtal alltid en oppfølgingsdato – «Kan jeg ringe deg torsdag?»',
+    tip:'Finn den reelle innvendingen. Registrer i kalender med notat om hva kunden var usikker på.'
+  },
+  {
+    q:'"Vil ikke ha bindingstid"',
+    a:'<strong>Mobilabonnement</strong> har ingen bindingstid – kunden kan bytte eller avslutte når som helst. <strong>Sikre hjemmenett</strong> har heller ingen bindingstid. <strong>Fiber og TV</strong> har bindingstid, slik det er standard hos alle fiberoperatører i Norge – dette gir forutsigbar pris i bindingsperioden.',
+    tip:'Vær tydelig og presis: hva har binding og hva har ikke det. Unngå å blande disse.'
+  },
+  {
+    q:'"Dekningen er like god overalt"',
+    a:'I de største byene er forskjellene små mellom Telenor og Telia. Men Telenor har <strong>over 5 000 basestasjoner</strong> mot Telias ca. 3 000, og er dokumentert best i distrikt, fjell og kyst. Ice bruker nasjonal gjesting utenfor eget nett og har lavere prioritet. Nakom (Post- og teletilsynet) gjennomfører uavhengige dekningskontroller.',
+    tip:'Spør alltid om hytte, fritidsbåt eller pendlingsrute. Det avgjør hvilken operatør som faktisk passer.'
+  },
+  {
+    q:'"Jeg byttet akkurat"',
+    a:'Forstår det. Det viktigste nå er å få datoen binding løper ut. Da tar du kontakt igjen – kunden skal slippe å huske det selv. Si det rett ut: «Jeg noterer deg og ringer X dato. Greit?»',
+    tip:'Dette er en varm lead. Legg inn nøyaktig dato i kalender og noter hva kunden bruker i dag.'
+  },
+  {
+    q:'"Trenger ikke Sikre – har ingenting å skjule"',
+    a:'Sikre handler ikke om hva man skjuler – det handler om <strong>ID-tyveri og svindel</strong>. Kriminelle kan bruke din identitet til å ta opp forbrukslån, opprette kredittkort eller tappe bankkontoer – uten at du vet om det før skaden er skjedd. Sikre varsler deg umiddelbart ved mistenkelige aktiviteter. Ingen bindingstid – prøv en måned.',
+    tip:'«'+SIKRE_TOTAL_VAL+' kr i verdi for 200 kr/mnd, ingen binding. Hva er risikoen ved å prøve?»'
+  },
+  {
+    q:'"Telenor er for dyrt"',
+    a:'Dyrt sammenlignet med hva? Hvis sammenlignet med bare fiber uten strøm: Telenor er dyrere. Men legg til strømmetjenestene kunden allerede betaler – da er Telenor nesten alltid billigere totalt. For mobil: sammenlign hva kunden faktisk har inkludert hos konkurrenten.',
+    tip:'Bruk alltid kalkulator. La tallene overbevise – ikke ord.'
+  },
+  {
+    q:'"Samboer/partner bestemmer"',
+    a:'Respektér det. Spør: «Hva tror du hen ville synes om å spare X kr i måneden?» Gi kunden noe konkret å ta med hjem – vis fiberkalkulatoren og send eller vis sparetallet. Finn ut hvem som styrer internett og noter i kalender.',
+    tip:'Registrer hvem som bestemmer i kalender-feltet «Hvem styrer internett hjemme». Avtal oppfølging når begge er tilstede.'
+  },
 ];
 
 function renderObjList(){
@@ -1093,6 +1212,7 @@ function renderEventsList(){
 document.getElementById('ev-date').value = new Date().toISOString().split('T')[0];
 renderBehov();
 renderFiber();
+renderLinjeKort();
 calcMobil();
 renderSikre();
 renderObjList();
