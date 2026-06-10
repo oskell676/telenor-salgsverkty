@@ -538,14 +538,17 @@ function setLinjeAge(i, val){ linjeData[i].age = val; renderLinjeKort(); calcMob
 function setLinjePakke(i, val){ linjeData[i].pakke = val; renderLinjeKort(); calcMobil(); }
 
 function linjePris(i, age, pakke){
-  if(pakke === 'unlimited'){
-    if(i === 0 && age !== 'youth' && age !== 'child') return 399; // 1. linje, over 30
-    return 299; // familie, under 30, eller barn – alltid 299 på ubegrenset
-  } else { // 10 GB
+  if(pakke === '10gb'){
     if(age === 'child') return 49;
     if(age === 'youth') return 199;
     return 249;
   }
+  // Ubegrenset:
+  // Under 30 og under 13 betaler alltid 299.
+  // Over 30: den FØRSTE over-30 personen i gruppen betaler 399, resten 299 (familierabatt).
+  if(age === 'youth' || age === 'child') return 299;
+  const forsteVoksenIdx = linjeData.findIndex(l => l.age === 'adult');
+  return forsteVoksenIdx === i ? 399 : 299;
 }
 
 function renderLinjeKort(){
