@@ -635,17 +635,17 @@ function calcMobil(){
 // ═══════════════════════════════════════════════════════════
 const DEFAULT_SERVICES=[
   {id:'netflix',   name:'Netflix',               price:149, included:true },
-  {id:'max',       name:'Max (HBO)',              price:149, included:true },
-  {id:'disney',    name:'Disney+',               price:119, included:true },
+  {id:'max',       name:'Max',                   price:149, included:true },
+  {id:'disney',    name:'Disney+',               price:109, included:true },
   {id:'viaplay',   name:'Viaplay Film & Serier', price:169, included:true },
-  {id:'tv2play',   name:'TV 2 Play (u/reklame)', price:199, included:true },
-  {id:'appletv',   name:'Apple TV+',             price:99,  included:true },
-  {id:'skyshow',   name:'Sky Showtime',           price:109, included:true },
-  {id:'amazon',    name:'Amazon Prime',           price:69,  included:false},
-  {id:'spotify',   name:'Spotify',               price:139, included:false},
+  {id:'tv2play',   name:'TV 2 Play (u/reklame)', price:169, included:true },
+  {id:'appletv',   name:'Apple TV+',             price:119, included:true },
+  {id:'skyshow',   name:'SkyShowtime',            price:109, included:true },
+  {id:'amazon',    name:'Amazon Prime Video',     price:79,  included:false},
+  {id:'spotify',   name:'Spotify',               price:119, included:false},
   {id:'nrk',       name:'NRK TV',                price:0,   included:false},
 ];
-const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0); // 993
+const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0);
 
 let fSvc = DEFAULT_SERVICES.map(s=>({...s,active:false}));
 let fCustom = [];
