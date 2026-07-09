@@ -705,7 +705,7 @@ function calcFiber(){
 
   // Telenor: TV 2 Play alltid gratis, 3 billigste valgfrie gratis, resten koster
   const fixedActive = active.filter(s=>s.fixed);
-  const optionalActive = active.filter(s=>s.included && !s.fixed).sort((a,b)=>a.price-b.price);
+  const optionalActive = active.filter(s=>s.included && !s.fixed).sort((a,b)=>b.price-a.price);
   const freeOptional = optionalActive.slice(0,3);
   const extraOptional = optionalActive.slice(3);
   const nonIncluded = active.filter(s=>!s.included);
@@ -781,10 +781,17 @@ function calcFiber(){
     br('Altibox totalt',fmt(tA),'total');
     const sp=document.createElement('div');sp.style.height='6px';bd.appendChild(sp);
     br('Telenor fiber + TV-pakke',fmt(tB));
-    if(iV>0) br('Inkludert i pakken (TV 2 Play + '+Math.min(freeOptional.length,3)+' valgfrie)','− '+fmt(iV),'green');
-    if(extraOptional.length>0) br('Tjenester utover pakken ('+extraOptional.length+' for mange)','+ '+fmt(extraOptional.reduce((s,x)=>s+x.price,0)),'red');
+    if(iV>0) br('TV 2 Play + '+freeOptional.length+' valgfrie inkludert','− '+fmt(iV),'green');
     if(nonIncluded.reduce((s,x)=>s+x.price,0)>0) br('Tjenester ikke i pakken','+ '+fmt(nonIncluded.reduce((s,x)=>s+x.price,0)));
     br('Telenor totalt',fmt(tT),'total');
+    if(extraOptional.length>0){
+      const extraSum = extraOptional.reduce((s,x)=>s+x.price,0);
+      const extraNames = extraOptional.map(s=>s.name).join(', ');
+      const ex=document.createElement('div');
+      ex.style.cssText='background:#fde8e8;border-radius:8px;padding:10px 12px;margin-top:8px;font-size:13px;line-height:1.5;';
+      ex.innerHTML=`<strong style="color:#c0001f;">+ ${fmt(extraSum)}/mnd tillegg:</strong> ${extraNames} dekkes ikke av pakken (alle 3 valgfrie plasser er brukt).`;
+      bd.appendChild(ex);
+    }
   }
 }
 
