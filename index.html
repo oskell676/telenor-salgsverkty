@@ -200,6 +200,101 @@ input[type=number]{text-align:right;}
 .included-note{background:#e8f4fd;border-radius:10px;padding:11px 13px;font-size:13px;color:#185FA5;margin-bottom:12px;display:none;}
 
 hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
+
+/* ── FIBER SALGSVERKTØY ── */
+.fiber-page{background:#0d1117;min-height:100vh;padding:16px;}
+.fiber-header{text-align:center;padding:16px 0 20px;}
+.fiber-header h2{font-size:18px;font-weight:800;color:white;letter-spacing:-.3px;}
+.fiber-header p{font-size:13px;color:#8b949e;margin-top:4px;}
+.fiber-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:640px){.fiber-cols{grid-template-columns:1fr;}}
+.fcol{border-radius:16px;overflow:hidden;}
+
+/* Altibox kolonne */
+.fcol-alti{background:#1c1c1e;border:1px solid #3a1c1c;}
+.fcol-header-alti{background:linear-gradient(135deg,#8b0000,#c0001f);padding:16px;text-align:center;}
+.fcol-header-tele{background:linear-gradient(135deg,#003d7a,#005bac);padding:16px;text-align:center;}
+.fcol-header-save{background:linear-gradient(135deg,#064e3b,#065f46);padding:16px;text-align:center;}
+.fcol-logo{font-size:15px;font-weight:800;color:white;letter-spacing:.5px;opacity:.9;}
+.fcol-subtitle{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;}
+.fcol-body{padding:14px;}
+.fcol-tele{background:#0d1f3c;border:1px solid #1e3a5f;}
+.fcol-save{background:#052e16;border:1px solid #14532d;}
+
+/* Price input */
+.base-price-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px;}
+.base-price-label{font-size:12px;color:#8b949e;font-weight:600;}
+.base-price-input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:16px;font-weight:700;width:90px;text-align:right;padding:6px 10px;}
+
+/* Service rows */
+.f-svc{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;user-select:none;}
+.f-svc:last-child{border-bottom:none;}
+.f-svc-icon{width:32px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;letter-spacing:.3px;flex-shrink:0;color:white;}
+.f-svc-name{flex:1;font-size:13px;font-weight:500;color:#e6edf3;}
+.f-svc-price{font-size:13px;font-weight:700;color:#8b949e;margin-right:6px;}
+.f-checkbox{width:20px;height:20px;border-radius:6px;border:2px solid #484f58;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.f-checkbox.checked{background:#238636;border-color:#238636;}
+.f-checkbox.checked::after{content:'✓';color:white;font-size:12px;font-weight:700;}
+
+/* Included badge */
+.f-included{font-size:10px;font-weight:700;background:#0d3b2e;color:#3fb950;border:1px solid #238636;border-radius:4px;padding:2px 7px;white-space:nowrap;}
+.f-extra{font-size:10px;font-weight:700;background:#2d1b00;color:#f0883e;border:1px solid #9e4800;border-radius:4px;padding:2px 7px;}
+
+/* Totals */
+.fcol-total{background:rgba(255,255,255,.05);border-radius:10px;padding:12px 14px;margin-top:10px;}
+.fcol-total-label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:4px;}
+.fcol-total-num{font-size:26px;font-weight:800;color:white;}
+.fcol-total-num.alti-num{color:#ff6b6b;}
+.fcol-total-num.tele-num{color:#58a6ff;}
+
+/* Savings */
+.save-row{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);}
+.save-row:last-child{border-bottom:none;}
+.save-row-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:3px;}
+.save-row-val{font-size:20px;font-weight:700;color:#e6edf3;}
+.save-big{text-align:center;padding:16px 0 8px;}
+.save-amount{font-size:38px;font-weight:900;color:#3fb950;line-height:1;}
+.save-per{font-size:13px;color:#56d364;margin-top:4px;}
+.save-year{font-size:22px;font-weight:800;color:#3fb950;margin-top:12px;}
+.save-year-label{font-size:12px;color:#56d364;}
+.no-save{font-size:15px;color:#8b949e;text-align:center;padding:20px 0;}
+
+/* Telenor inkludert */
+.tele-include-list{margin:8px 0;}
+.tele-include-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;}
+.tele-include-item:last-child{border-bottom:none;}
+.tele-include-check{color:#3fb950;font-weight:700;flex-shrink:0;}
+.tele-include-name{flex:1;color:#e6edf3;}
+.tele-include-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.tag-inc{background:#0d3b2e;color:#3fb950;border:1px solid #238636;}
+.tag-extra{background:#2d1b00;color:#f0883e;border:1px solid #9e4800;}
+
+/* Fiber reset btn */
+.fiber-reset{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#8b949e;border-radius:8px;padding:9px;font-size:12px;cursor:pointer;margin-top:10px;}
+.fiber-reset:hover{background:rgba(255,255,255,.1);}
+
+/* Telenor inkludert features */
+.tele-feat{font-size:12px;color:#8b949e;padding:4px 0;display:flex;align-items:center;gap:6px;}
+.tele-feat::before{content:'✓';color:#3fb950;font-weight:700;}
+
+/* Fiber checkbox */
+.f-cb{width:20px;height:20px;border-radius:5px;border:2px solid #484f58;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;transition:all .15s;}
+.f-cb-on{background:#238636;border-color:#238636;}
+.f-inc-tag{font-size:9px;font-weight:700;background:#0d3b2e;color:#3fb950;border:1px solid #238636;border-radius:4px;padding:1px 5px;white-space:nowrap;flex-shrink:0;}
+.f-inc-check{color:#3fb950;font-weight:700;font-size:14px;flex-shrink:0;}
+.f-inc-plus{color:#f0883e;font-weight:700;font-size:14px;flex-shrink:0;}
+.f-svc-price-inc{font-size:11px;font-weight:700;color:#3fb950;margin-left:auto;}
+.f-svc-inc{opacity:.9;}
+.f-svc-extra{opacity:.85;}
+
+/* Savings column */
+.save-label{font-size:12px;color:#6e7681;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:4px;}
+.save-sublabel{font-size:12px;color:#56d364;margin-top:4px;}
+.save-neg .save-amount{color:#ff6b6b;}
+.save-neg .save-sublabel{color:#ffa198;}
+.save-neg .save-year-label{font-size:11px;color:#8b949e;margin-top:10px;line-height:1.4;}
+.save-neutral .save-amount{color:#6e7681;}
+.save-neutral .save-sublabel{color:#484f58;}
 </style>
 </head>
 <body>
@@ -286,52 +381,82 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
 <!-- ═══════════════════════════════════════════════════════════
      FIBER
 ═══════════════════════════════════════════════════════════ -->
-<div id="page-fiber" class="page">
+<div id="page-fiber" class="page" style="padding:12px;background:#0d1117;">
 
-  <div class="card">
-    <div class="card-title">Priser</div>
-    <div class="input-row">
-      <label>Telenor fiber 500/500 + TV-pakke</label>
-      <div class="right"><input type="number" id="tele-price" value="1197" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
-    </div>
-    <div class="input-row">
-      <label>Altibox tilbudspris</label>
-      <div class="right"><input type="number" id="alti-price" value="899" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
-    </div>
+  <div class="fiber-header">
+    <h2>Telenor vs Altibox</h2>
+    <p>Huk av tjenestene kunden betaler i dag – se besparelsen live</p>
   </div>
 
-  <div class="card">
-    <div class="card-title">Strømmetjenester kunden allerede betaler for</div>
-    <p style="font-size:12px;color:#888;margin-bottom:10px;">Slå på alle tjenester kunden betaler separat i dag.</p>
-    <div id="fiber-services"></div>
-    <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:0.5px solid #f0f0f0;">
-      <input type="text" id="custom-name" placeholder="Annen tjeneste..." style="flex:1;">
-      <input type="number" id="custom-price" placeholder="kr" style="width:75px;">
-      <button class="btn btn-blue btn-sm" onclick="addCustom()">+</button>
+  <div class="fiber-cols">
+
+    <!-- KOLONNE 1: ALTIBOX -->
+    <div class="fcol fcol-alti">
+      <div class="fcol-header-alti">
+        <div class="fcol-logo">ALTIBOX</div>
+        <div class="fcol-subtitle">Kundens løsning i dag</div>
+      </div>
+      <div class="fcol-body">
+        <div class="base-price-row">
+          <span class="base-price-label">Altibox pakke</span>
+          <input class="base-price-input" type="number" id="alti-base" value="1489" oninput="calcFiber()">
+        </div>
+        <div id="alti-svc-list"></div>
+        <button class="fiber-reset" onclick="resetFiber()">↺ Nullstill</button>
+        <div class="fcol-total">
+          <div class="fcol-total-label">Totalt per måned</div>
+          <div class="fcol-total-num alti-num" id="f-alti-total">1 489 kr</div>
+        </div>
+      </div>
     </div>
-    <button class="reset-btn" onclick="resetFiber()">↺ Nullstill – ny kunde</button>
+
+    <!-- KOLONNE 2: TELENOR -->
+    <div class="fcol fcol-tele">
+      <div class="fcol-header-tele">
+        <div class="fcol-logo">TELENOR</div>
+        <div class="fcol-subtitle">Ny løsning</div>
+      </div>
+      <div class="fcol-body">
+        <div class="base-price-row">
+          <span class="base-price-label">Fiber + TV-pakke</span>
+          <span style="font-size:16px;font-weight:800;color:white;">1 197 kr</span>
+        </div>
+        <div class="tele-feat">Fiber 500/500 Mbit/s</div>
+        <div class="tele-feat">Ny tri-band WiFi-ruter</div>
+        <div class="tele-feat">Portabel TV-boks</div>
+        <div class="tele-feat">20+ TV-kanaler</div>
+        <div style="font-size:11px;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:10px 0 6px;">Strømmetjenester</div>
+        <div id="tele-svc-list"></div>
+        <div class="fcol-total">
+          <div class="fcol-total-label">Totalt per måned</div>
+          <div class="fcol-total-num tele-num" id="f-tele-total">1 197 kr</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KOLONNE 3: BESPARELSE -->
+    <div class="fcol fcol-save">
+      <div class="fcol-header-save">
+        <div class="fcol-logo">💰 BESPARELSE</div>
+        <div class="fcol-subtitle">Med Telenor</div>
+      </div>
+      <div class="fcol-body">
+        <div class="save-row">
+          <div class="save-row-label">Betaler i dag</div>
+          <div class="save-row-val" id="f-save-today">—</div>
+        </div>
+        <div class="save-row">
+          <div class="save-row-label">Med Telenor</div>
+          <div class="save-row-val" id="f-save-tele">—</div>
+        </div>
+        <div id="f-save-result"></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- VERDIKALKULATOR FIBER -->
-  <div class="value-box" id="fiber-value-box" style="display:none;"></div>
-
-  <div class="included-note" id="fiber-included-note"></div>
-  <div id="fiber-banner"></div>
-
-  <div class="card">
-    <div class="card-title">Kostnadssammenligning</div>
-    <div class="grid2">
-      <div class="metric"><div class="metric-label">Altibox totalt</div><div class="metric-value mv-red" id="f-total-alti">899 kr</div></div>
-      <div class="metric"><div class="metric-label">Telenor totalt</div><div class="metric-value mv-blue" id="f-total-tele">1 197 kr</div></div>
-      <div class="metric"><div class="metric-label">Sparer/mnd</div><div class="metric-value mv-gray" id="f-save-month">—</div></div>
-      <div class="metric"><div class="metric-label">Sparer/år</div><div class="metric-value mv-gray" id="f-save-year">—</div></div>
-    </div>
-    <div id="fiber-breakdown"></div>
-  </div>
-
-  <div class="card" style="background:#f8faff;border-color:#dde8f8;">
-    <div class="card-title blue">Bindingstid</div>
-    <p style="font-size:14px;color:#333;line-height:1.6;">📋 Fiber og TV har <strong>bindingstid</strong> – husk å informere kunden.<br><br>📱 Mobil og Sikre hjemmenett: <strong>ingen bindingstid</strong>.</p>
+  <div style="text-align:center;font-size:11px;color:#484f58;padding:4px 0 8px;">
+    📋 Fiber og TV har bindingstid · Mobil og Sikre: ingen bindingstid
   </div>
 
 </div>
@@ -633,141 +758,101 @@ function calcMobil(){
 // ═══════════════════════════════════════════════════════════
 // FIBER
 // ═══════════════════════════════════════════════════════════
-const DEFAULT_SERVICES=[
-  {id:'netflix',   name:'Netflix',               price:149, included:true },
-  {id:'max',       name:'Max (HBO)',              price:149, included:true },
-  {id:'disney',    name:'Disney+',               price:119, included:true },
-  {id:'viaplay',   name:'Viaplay Film & Serier', price:169, included:true },
-  {id:'tv2play',   name:'TV 2 Play (u/reklame)', price:199, included:true },
-  {id:'appletv',   name:'Apple TV+',             price:99,  included:true },
-  {id:'skyshow',   name:'Sky Showtime',           price:109, included:true },
-  {id:'amazon',    name:'Amazon Prime',           price:69,  included:false},
-  {id:'spotify',   name:'Spotify',               price:139, included:false},
-  {id:'nrk',       name:'NRK TV',                price:0,   included:false},
+const FIBER_SERVICES = [
+  {id:'netflix',  name:'Netflix',      price:219, included:true,  active:false},
+  {id:'tv2play',  name:'TV 2 Play',    price:179, included:true,  active:false},
+  {id:'max',      name:'Max',          price:189, included:true,  active:false},
+  {id:'disney',   name:'Disney+',      price:119, included:true,  active:false},
+  {id:'viaplay',  name:'Viaplay',      price:169, included:false, active:false},
+  {id:'prime',    name:'Prime Video',  price:69,  included:false, active:false},
+  {id:'skyshow',  name:'SkyShowtime',  price:109, included:false, active:false},
 ];
-const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0); // 993
-
-let fSvc = DEFAULT_SERVICES.map(s=>({...s,active:false}));
-let fCustom = [];
+const TELE_FIBER_BASE = 1197;
+let fSvc = FIBER_SERVICES.map(s=>({...s}));
 
 function renderFiber(){
-  const list = document.getElementById('fiber-services'); list.innerHTML='';
-  [...fSvc,...fCustom].forEach((s,i)=>{
-    const d=document.createElement('div'); d.className='svc-row';
-    const b = s.included
-      ? `<span class="badge badge-green">Inkludert i Telenor</span>`
-      : (s.price>0 ? `<span class="badge badge-red">Ikke inkludert</span>` : '');
-    d.innerHTML=`<div class="svc-info">
-      <div class="svc-name">${s.name} ${b}</div>
-      <div class="svc-price">${s.price>0 ? s.price+' kr/mnd' : 'Gratis'}</div>
-    </div>
-    <button class="toggle ${s.active?'on':'off'}" onclick="toggleF(${i})"><div class="knob"></div></button>`;
-    list.appendChild(d);
+  const altiList = document.getElementById('alti-svc-list');
+  altiList.innerHTML='';
+  fSvc.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='f-svc';
+    d.onclick=()=>toggleF(i);
+    const tag = s.included ? '<span class="f-inc-tag">Inkl. Telenor</span>' : '';
+    d.innerHTML=`<div class="f-cb${s.active?' f-cb-on':''}">${s.active?'✓':''}</div>
+      <span class="f-svc-name">${s.name}</span>
+      ${tag}
+      <span class="f-svc-price">${s.price} kr</span>`;
+    altiList.appendChild(d);
   });
+
+  const teleList = document.getElementById('tele-svc-list');
+  teleList.innerHTML='';
+  fSvc.forEach(s=>{
+    const d=document.createElement('div');
+    if(s.included){
+      d.className='f-svc f-svc-inc';
+      d.innerHTML=`<span class="f-inc-check">✓</span>
+        <span class="f-svc-name">${s.name}</span>
+        <span class="f-svc-price-inc">Inkludert</span>`;
+      teleList.appendChild(d);
+    } else if(s.active){
+      d.className='f-svc f-svc-extra';
+      d.innerHTML=`<span class="f-inc-plus">+</span>
+        <span class="f-svc-name">${s.name}</span>
+        <span class="f-svc-price">${s.price} kr</span>`;
+      teleList.appendChild(d);
+    }
+  });
+
   calcFiber();
 }
 
 function toggleF(i){
-  if(i<fSvc.length) fSvc[i].active=!fSvc[i].active;
-  else fCustom[i-fSvc.length].active=!fCustom[i-fSvc.length].active;
-  renderFiber();
-}
-
-function addCustom(){
-  const n=document.getElementById('custom-name').value.trim();
-  const p=parseInt(document.getElementById('custom-price').value)||0;
-  if(!n) return;
-  fCustom.push({name:n,price:p,included:false,active:true});
-  document.getElementById('custom-name').value='';
-  document.getElementById('custom-price').value='';
+  fSvc[i].active=!fSvc[i].active;
   renderFiber();
 }
 
 function resetFiber(){
-  fSvc=DEFAULT_SERVICES.map(s=>({...s,active:false}));
-  fCustom=[];
-  document.getElementById('alti-price').value=899;
-  document.getElementById('tele-price').value=1197;
+  fSvc=FIBER_SERVICES.map(s=>({...s}));
+  document.getElementById('alti-base').value=1489;
   renderFiber();
 }
 
 function calcFiber(){
-  const aB = parseInt(document.getElementById('alti-price').value)||0;
-  const tB = parseInt(document.getElementById('tele-price').value)||0;
-  const all = [...fSvc,...fCustom];
-  const active = all.filter(s=>s.active);
-  const sT = active.reduce((s,x)=>s+x.price,0);
-  const iV = active.filter(s=>s.included).reduce((s,x)=>s+x.price,0);
-  const nI = active.filter(s=>!s.included).reduce((s,x)=>s+x.price,0);
-  const tA = aB+sT, tT = tB+nI, diff = tA-tT;
+  const altiBase = parseInt(document.getElementById('alti-base').value)||0;
+  const activeSvcs = fSvc.filter(s=>s.active);
+  const altiSvcTotal = activeSvcs.reduce((s,x)=>s+x.price,0);
+  const altiTotal = altiBase + altiSvcTotal;
+  const teleExtra = activeSvcs.filter(s=>!s.included).reduce((s,x)=>s+x.price,0);
+  const teleTotal = TELE_FIBER_BASE + teleExtra;
+  const diff = altiTotal - teleTotal;
 
-  document.getElementById('f-total-alti').textContent = fmt(tA);
-  document.getElementById('f-total-tele').textContent = fmt(tT);
+  document.getElementById('f-alti-total').textContent = fmt(altiTotal);
+  document.getElementById('f-tele-total').textContent = fmt(teleTotal);
+  document.getElementById('f-save-today').textContent = fmt(altiTotal);
+  document.getElementById('f-save-tele').textContent = fmt(teleTotal);
 
-  const sm=document.getElementById('f-save-month'),sy=document.getElementById('f-save-year'),bn=document.getElementById('fiber-banner');
-  if(active.length===0){
-    sm.textContent='—';sm.className='metric-value mv-gray';
-    sy.textContent='—';sy.className='metric-value mv-gray';
-    bn.innerHTML='';
-  } else if(diff>0){
-    sm.textContent=fmt(diff);sm.className='metric-value mv-green';
-    sy.textContent=fmt(diff*12);sy.className='metric-value mv-green';
-    bn.innerHTML=`<div class="banner banner-green"><div class="banner-title" style="color:#085041;">Kunden sparer ${fmt(diff)}/mnd 🎉</div><div class="banner-sub">Det er <strong>${fmt(diff*12)}</strong> i året – og de beholder alle tjenestene.</div></div>`;
-  } else if(diff<0){
-    sm.textContent=fmt(Math.abs(diff))+' mer';sm.className='metric-value mv-red';
-    sy.textContent=fmt(Math.abs(diff)*12)+' mer';sy.className='metric-value mv-red';
-    bn.innerHTML=`<div class="banner banner-orange"><div class="banner-title" style="color:#854F0B;">Telenor er ${fmt(Math.abs(diff))}/mnd dyrere</div><div class="banner-sub">Fremhev: portabel TV-boks, tri-band ruter og Norges raskeste nett.</div></div>`;
-  } else {
-    sm.textContent='0 kr';sm.className='metric-value mv-gray';
-    sy.textContent='0 kr';sy.className='metric-value mv-gray';
-    bn.innerHTML=`<div class="banner banner-blue"><div class="banner-title" style="color:#003d7a;">Samme totalpris</div><div class="banner-sub">Men Telenor gir ny tri-band ruter og portabel TV-boks.</div></div>`;
-  }
-
-  // Included note
-  const in2=document.getElementById('fiber-included-note');
-  if(iV>0){
-    const ns=active.filter(s=>s.included).map(s=>s.name).join(', ');
-    in2.innerHTML=`<strong>${fmt(iV)}/mnd</strong> inkludert i Telenors TV-pakke: ${ns}`;
-    in2.style.display='block';
-  } else {
-    in2.style.display='none';
-  }
-
-  // VERDIKALKULATOR FIBER
-  const vbEl = document.getElementById('fiber-value-box');
-  const includedSvcs = DEFAULT_SERVICES.filter(s=>s.included);
-  const vbRows = includedSvcs.map(s=>`<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">${s.price} kr/mnd</span></div>`).join('');
-  vbEl.style.display='block';
-  vbEl.innerHTML = `
-    <div class="value-box-title">💎 Strømmetjenester inkludert i TV-pakken</div>
-    ${vbRows}
-    <div class="value-total-row">
-      <span class="value-total-label">Samlet verdi av strømmetjenester</span>
-      <span class="value-total-num">${ALL_STREAMING_VALUE} kr/mnd</span>
-    </div>
-    <div class="value-you-pay">
-      <span class="label">Du betaler (fiber + TV totalt)</span>
-      <span class="num">${fmt(tB)}/mnd</span>
+  const saveEl = document.getElementById('f-save-result');
+  if(diff>0){
+    saveEl.innerHTML=`<div class="save-big">
+      <div class="save-label">Kunden sparer</div>
+      <div class="save-amount">${fmt(diff)}</div>
+      <div class="save-sublabel">per måned</div>
+      <div class="save-year">${fmt(diff*12)} per år 🎉</div>
     </div>`;
-
-  // Breakdown
-  const bd=document.getElementById('fiber-breakdown'); bd.innerHTML='';
-  const br=(l,v,c)=>{
-    const d=document.createElement('div');
-    d.className='brow'+(c==='total'?' total-row':'');
-    const vc=c==='green'?'green-t':c==='red'?'red-t':'';
-    d.innerHTML=`<span>${l}</span><span class="${vc}">${v}</span>`;
-    bd.appendChild(d);
-  };
-  if(active.length>0){
-    br('Altibox fiber + TV',fmt(aB));
-    if(sT>0) br('Strømmetjenester','+ '+fmt(sT),'red');
-    br('Altibox totalt',fmt(tA),'total');
-    const sp=document.createElement('div');sp.style.height='6px';bd.appendChild(sp);
-    br('Telenor fiber + TV-pakke',fmt(tB));
-    if(iV>0) br('Inkludert i pakken','− '+fmt(iV),'green');
-    if(nI>0) br('Tjenester ikke inkludert','+ '+fmt(nI));
-    br('Telenor totalt',fmt(tT),'total');
+  } else if(diff<0){
+    saveEl.innerHTML=`<div class="save-big save-neg">
+      <div class="save-label">Telenor koster</div>
+      <div class="save-amount">${fmt(Math.abs(diff))}</div>
+      <div class="save-sublabel">mer per måned</div>
+      <div class="save-year-label">Fremhev: portabel TV-boks + tri-band ruter</div>
+    </div>`;
+  } else {
+    saveEl.innerHTML=`<div class="save-big save-neutral">
+      <div class="save-label">Huk av tjenestene</div>
+      <div class="save-amount" style="font-size:24px;color:#6e7681;margin:8px 0;">kunden betaler</div>
+      <div class="save-sublabel">for å se besparelsen</div>
+    </div>`;
   }
 }
 
