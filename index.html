@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Telenor Salg">
-<title>Telenor Salgsverktøy</title>
+<meta name="apple-mobile-web-app-title" content="Telenor">
+<title>Telenor</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a1a;min-height:100vh;padding-bottom:80px;}
@@ -205,7 +205,7 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
 <body>
 
 <div class="nav">
-  <h1>⚡ Telenor Salgsverktøy</h1>
+  <h1>⚡ Telenor</h1>
   <div class="tabs">
     <button class="tab active" onclick="showPage('behov',this)">🎯 Behovsavdekker</button>
     <button class="tab" onclick="showPage('mobil',this)">📱 Mobil</button>
@@ -382,7 +382,7 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
   </div>
 
   <div class="card">
-    <div class="card-title red">Salgsargumenter</div>
+    <div class="card-title red">Fordeler</div>
     <div id="sikre-args"></div>
   </div>
 
@@ -634,16 +634,16 @@ function calcMobil(){
 // FIBER
 // ═══════════════════════════════════════════════════════════
 const DEFAULT_SERVICES=[
-  {id:'netflix',   name:'Netflix',               price:149, included:true },
-  {id:'max',       name:'Max',                   price:149, included:true },
-  {id:'disney',    name:'Disney+',               price:109, included:true },
-  {id:'viaplay',   name:'Viaplay Film & Serier', price:169, included:true },
-  {id:'tv2play',   name:'TV 2 Play (u/reklame)', price:169, included:true },
-  {id:'appletv',   name:'Apple TV+',             price:119, included:true },
-  {id:'skyshow',   name:'SkyShowtime',            price:109, included:true },
-  {id:'amazon',    name:'Amazon Prime Video',     price:79,  included:false},
-  {id:'spotify',   name:'Spotify',               price:119, included:false},
-  {id:'nrk',       name:'NRK TV',                price:0,   included:false},
+  {id:'netflix',   name:'Netflix',               price:149, included:true,  fixed:false},
+  {id:'max',       name:'Max',                   price:149, included:true,  fixed:false},
+  {id:'disney',    name:'Disney+',               price:109, included:true,  fixed:false},
+  {id:'viaplay',   name:'Viaplay Film & Serier', price:169, included:true,  fixed:false},
+  {id:'tv2play',   name:'TV 2 Play (u/reklame)', price:169, included:true,  fixed:true },
+  {id:'appletv',   name:'Apple TV+',             price:119, included:true,  fixed:false},
+  {id:'skyshow',   name:'SkyShowtime',            price:109, included:true,  fixed:false},
+  {id:'amazon',    name:'Amazon Prime Video',     price:79,  included:false, fixed:false},
+  {id:'spotify',   name:'Spotify',               price:119, included:false, fixed:false},
+  {id:'nrk',       name:'NRK TV',                price:0,   included:false, fixed:false},
 ];
 const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0);
 
@@ -654,9 +654,11 @@ function renderFiber(){
   const list = document.getElementById('fiber-services'); list.innerHTML='';
   [...fSvc,...fCustom].forEach((s,i)=>{
     const d=document.createElement('div'); d.className='svc-row';
-    const b = s.included
-      ? `<span class="badge badge-green">Inkludert i Telenor</span>`
-      : (s.price>0 ? `<span class="badge badge-red">Ikke inkludert</span>` : '');
+    const b = s.fixed
+      ? `<span class="badge badge-green">Alltid inkludert</span>`
+      : s.included
+        ? `<span class="badge badge-blue">Valgfri inkludert</span>`
+        : (s.price>0 ? `<span class="badge badge-red">Ikke inkludert</span>` : '');
     d.innerHTML=`<div class="svc-info">
       <div class="svc-name">${s.name} ${b}</div>
       <div class="svc-price">${s.price>0 ? s.price+' kr/mnd' : 'Gratis'}</div>
@@ -735,17 +737,16 @@ function calcFiber(){
 
   // VERDIKALKULATOR FIBER
   const vbEl = document.getElementById('fiber-value-box');
-  const includedSvcs = DEFAULT_SERVICES.filter(s=>s.included);
-  const vbRows = includedSvcs.map(s=>`<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">${s.price} kr/mnd</span></div>`).join('');
+  const fixedSvc = DEFAULT_SERVICES.find(s=>s.fixed);
+  const valgfriSvcs = DEFAULT_SERVICES.filter(s=>s.included && !s.fixed);
+  const valgfriRows = valgfriSvcs.map(s=>`<div class="value-row"><span class="vr-name">${s.name}</span><span class="vr-price">${s.price} kr/mnd</span></div>`).join('');
   vbEl.style.display='block';
   vbEl.innerHTML = `
-    <div class="value-box-title">💎 Strømmetjenester inkludert i TV-pakken</div>
-    ${vbRows}
-    <div class="value-total-row">
-      <span class="value-total-label">Samlet verdi av strømmetjenester</span>
-      <span class="value-total-num">${ALL_STREAMING_VALUE} kr/mnd</span>
-    </div>
-    <div class="value-you-pay">
+    <div class="value-box-title">📺 Strømmetjenester i TV-pakken</div>
+    <div class="value-row"><span class="vr-name" style="font-weight:700;">✓ ${fixedSvc.name}</span><span class="vr-price" style="color:#7fffb2;">${fixedSvc.price} kr/mnd – alltid inkludert</span></div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);padding:8px 0 4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;">+ Velg 3 valgfrie av disse 6:</div>
+    ${valgfriRows}
+    <div class="value-you-pay" style="margin-top:10px;">
       <span class="label">Du betaler (fiber + TV totalt)</span>
       <span class="num">${fmt(tB)}/mnd</span>
     </div>`;
@@ -955,7 +956,7 @@ function showBehovResult(){
       : a.streaming==='Bare 1–2 tjenester'
       ? 'Sjekk fiberkalkulatoren – selv med 1–2 tjenester er Telenor ofte billigere totalt enn Altibox 899 kr + tjenestene separat.'
       : 'Telenor TV-pakke inkluderer 7 strømmetjenester. Hvis kunden starter noen av dem, er Telenor raskere billigere.';
-    anbefalinger.push({title:'Fiber 500/500 + TV-pakke', price:'1 197 kr/mnd', desc:'Inkluderer Netflix, Max, Disney+, Viaplay, TV 2 Play, Apple TV+ og Sky Showtime (verdi 993 kr/mnd). Portabel TV-boks. Bindingstid gjelder.'});
+    anbefalinger.push({title:'Fiber 500/500 + TV-pakke', price:'1 197 kr/mnd', desc:'Inkluderer TV 2 Play + 3 valgfrie strømmetjenester (Netflix, Max, Disney+, Viaplay, Apple TV+ eller SkyShowtime). Portabel TV-boks. Bindingstid gjelder.'});
     args.push(streamingArg);
     args.push('Altibox TV-boks er låst til huset. Telenors TV-boks er portabel – fungerer hjemme, på hytta og hos besteforeldrene.');
   }
@@ -992,7 +993,7 @@ function showBehovResult(){
   if(args.length>0){
     document.getElementById('result-details').innerHTML=`
       <div class="card">
-        <div class="card-title blue">Salgsargumenter for denne kunden</div>
+        <div class="card-title blue">Tips for denne kunden</div>
         ${args.map(a=>`<div style="display:flex;gap:8px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;font-size:14px;line-height:1.5;"><span style="color:#005bac;flex-shrink:0;font-weight:700;margin-top:1px;">→</span><span>${a}</span></div>`).join('')}
       </div>`;
   } else {
@@ -1016,7 +1017,7 @@ const OBJECTIONS=[
   },
   {
     q:'"Altibox er billigere på fiber"',
-    a:'Altibox tilbudspris er 899 kr/mnd, men det inkluderer <strong>ingen strømmetjenester</strong>. Telenors TV-pakke inkluderer Netflix, Max, Disney+, Viaplay, TV 2 Play, Apple TV+ og Sky Showtime – samlet markedsverdi <strong>993 kr/mnd</strong>. Legg på strømmetjenestene kunden allerede betaler, og Telenor er nesten alltid billigere totalt.',
+    a:'Altibox tilbudspris inkluderer <strong>ingen strømmetjenester</strong>. Telenors TV-pakke inkluderer TV 2 Play pluss 3 valgfrie av Netflix, Max, Disney+, Viaplay, Apple TV+ og SkyShowtime. Legg på strømmetjenestene kunden allerede betaler, og Telenor er nesten alltid billigere totalt.',
     tip:'Bruk fiberkalkulatoren. La kunden selv slå på tjenestene de har – de ser summen selv.'
   },
   {
