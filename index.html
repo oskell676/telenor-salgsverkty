@@ -200,6 +200,19 @@ input[type=number]{text-align:right;}
 .included-note{background:#e8f4fd;border-radius:10px;padding:11px 13px;font-size:13px;color:#185FA5;margin-bottom:12px;display:none;}
 
 hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
+
+/* Fiber – tilkoblingstype og leverandørknapper */
+.conn-btn{flex:1;padding:11px 8px;border-radius:10px;border:1.5px solid #ddd;background:#f5f7fa;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:#333;}
+.conn-btn.sel{background:#003d7a;border-color:#003d7a;color:white;}
+.prov-btn{background:#f5f7fa;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 4px;font-size:12px;font-weight:600;color:#333;cursor:pointer;text-align:center;transition:all .15s;width:100%;}
+.prov-btn.sel{background:#003d7a;border-color:#003d7a;color:white;}
+
+/* Fiber vs trådløs argumenter */
+.farg-row{display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid #f0f0f0;align-items:flex-start;}
+.farg-row:last-child{border-bottom:none;}
+.farg-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center;margin-top:1px;}
+.farg-title{font-size:13px;font-weight:700;color:#003d7a;margin-bottom:2px;}
+.farg-text{font-size:13px;color:#444;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -288,21 +301,44 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
 ═══════════════════════════════════════════════════════════ -->
 <div id="page-fiber" class="page">
 
+  <!-- 1. Tilkoblingstype -->
   <div class="card">
-    <div class="card-title">Priser</div>
+    <div class="card-title">Tilkoblingstype</div>
+    <div style="display:flex;gap:8px;">
+      <button class="conn-btn sel" id="conn-fiber" onclick="setConnType('fiber')">🔌 Fiber</button>
+      <button class="conn-btn" id="conn-trad" onclick="setConnType('trad')">📶 Trådløs / 4G/5G</button>
+    </div>
+  </div>
+
+  <!-- 2. Nåværende leverandør -->
+  <div class="card">
+    <div class="card-title">Nåværende leverandør</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px;">
+      <button class="prov-btn sel" id="prov-btn-altibox"  onclick="setProvider('Altibox','altibox')">Altibox</button>
+      <button class="prov-btn"    id="prov-btn-nexgen"    onclick="setProvider('NextGenTel','nexgen')">NextGenTel</button>
+      <button class="prov-btn"    id="prov-btn-global"    onclick="setProvider('GlobalConnect','global')">GlobalConnect</button>
+      <button class="prov-btn"    id="prov-btn-surf"      onclick="setProvider('Surf.net','surf')">Surf.net</button>
+      <button class="prov-btn"    id="prov-btn-telia"     onclick="setProvider('Telia','telia')">Telia</button>
+      <button class="prov-btn"    id="prov-btn-ice"       onclick="setProvider('Ice','ice')">Ice</button>
+      <button class="prov-btn"    id="prov-btn-annen"     onclick="setProvider('','annen')" style="grid-column:1/-1;">Annen...</button>
+    </div>
+    <div id="custom-prov-wrap" style="display:none;margin-bottom:10px;">
+      <input type="text" id="custom-prov-name" placeholder="Skriv leverandørnavn..." oninput="setCustomProv()">
+    </div>
+    <div class="input-row">
+      <label id="comp-price-label">Altibox månedspris</label>
+      <div class="right"><input type="number" id="alti-price" value="899" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
+    </div>
     <div class="input-row">
       <label>Telenor fiber 500/500 + TV-pakke</label>
       <div class="right"><input type="number" id="tele-price" value="1197" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
     </div>
-    <div class="input-row">
-      <label>Altibox tilbudspris</label>
-      <div class="right"><input type="number" id="alti-price" value="899" oninput="calcFiber()" style="width:85px;"><span class="lbl-small">kr</span></div>
-    </div>
   </div>
 
+  <!-- 3. Strømmetjenester -->
   <div class="card">
-    <div class="card-title">Strømmetjenester kunden allerede betaler for</div>
-    <p style="font-size:12px;color:#888;margin-bottom:10px;">Slå på alle tjenester kunden betaler separat i dag.</p>
+    <div class="card-title">Strømmetjenester kunden betaler for i dag</div>
+    <p style="font-size:12px;color:#888;margin-bottom:10px;">Slå på alle tjenester kunden betaler separat.</p>
     <div id="fiber-services"></div>
     <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:0.5px solid #f0f0f0;">
       <input type="text" id="custom-name" placeholder="Annen tjeneste..." style="flex:1;">
@@ -312,21 +348,27 @@ hr{border:none;border-top:0.5px solid #f0f0f0;margin:12px 0;}
     <button class="reset-btn" onclick="resetFiber()">↺ Nullstill – ny kunde</button>
   </div>
 
-  <!-- VERDIKALKULATOR FIBER -->
+  <!-- Verdikalkulator -->
   <div class="value-box" id="fiber-value-box" style="display:none;"></div>
-
   <div class="included-note" id="fiber-included-note"></div>
   <div id="fiber-banner"></div>
 
+  <!-- 4. Kostnadssammenligning -->
   <div class="card">
     <div class="card-title">Kostnadssammenligning</div>
     <div class="grid2">
-      <div class="metric"><div class="metric-label">Altibox totalt</div><div class="metric-value mv-red" id="f-total-alti">899 kr</div></div>
+      <div class="metric"><div class="metric-label" id="f-comp-label">Altibox totalt</div><div class="metric-value mv-red" id="f-total-alti">899 kr</div></div>
       <div class="metric"><div class="metric-label">Telenor totalt</div><div class="metric-value mv-blue" id="f-total-tele">1 197 kr</div></div>
       <div class="metric"><div class="metric-label">Sparer/mnd</div><div class="metric-value mv-gray" id="f-save-month">—</div></div>
       <div class="metric"><div class="metric-label">Sparer/år</div><div class="metric-value mv-gray" id="f-save-year">—</div></div>
     </div>
     <div id="fiber-breakdown"></div>
+  </div>
+
+  <!-- 5. Argumenter fiber vs trådløs (vises kun ved trådløs) -->
+  <div class="card" id="fiber-args-card" style="display:none;">
+    <div class="card-title blue">Fordeler med fiber fremfor trådløs</div>
+    <div id="fiber-args-body"></div>
   </div>
 
   <div class="card" style="background:#f8faff;border-color:#dde8f8;">
@@ -649,6 +691,55 @@ const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=
 
 let fSvc = DEFAULT_SERVICES.map(s=>({...s,active:false}));
 let fCustom = [];
+let currentProvider = 'Altibox';
+let currentConnType = 'fiber';
+
+const PROV_KEYS = ['altibox','nexgen','global','surf','telia','ice','annen'];
+
+const FIBER_ARGS = [
+  {icon:'⚡',title:'Hastighet',text:'Telenor fiber 500/500 Mbit/s – symmetrisk (like raskt opp som ned). Trådløs 4G/5G: typisk 50–200 Mbit/s ned, men ofte kun 10–30 Mbit/s opp.'},
+  {icon:'🔒',title:'Stabilitet',text:'Fiber er upåvirket av belastning fra naboer eller dårlig vær. Trådløst nett deler kapasitet i nærområdet – hastigheten kan variere i rushtid og tettbygde strøk.'},
+  {icon:'🎮',title:'Latens',text:'Fiber: ~5–15 ms – ideelt for gaming, videomøter og hjemmekontor. 4G/5G: ~20–50 ms, og kan variere ved høy belastning.'},
+  {icon:'📺',title:'TV og streaming',text:'Telenors TV-pakke inkluderer TV 2 Play + 3 valgfrie strømmetjenester. Trådløst bredbånd inkluderer vanligvis ingen TV-pakke eller strømmetjenester.'},
+  {icon:'💼',title:'Hjemmekontor',text:'Symmetrisk fiber er perfekt for VPN, videomøter og store filopplastinger. Opplastingshastigheten på trådløst er ofte begrenset og ustabil.'},
+  {icon:'📡',title:'Fremtidssikker',text:'Fiber har i praksis ubegrenset kapasitet for oppgraderinger. Trådløst deler luftbåndet med stadig flere enheter og er avhengig av ny mobilteknologi.'},
+];
+
+function setConnType(type){
+  currentConnType = type;
+  document.getElementById('conn-fiber').className = 'conn-btn'+(type==='fiber'?' sel':'');
+  document.getElementById('conn-trad').className  = 'conn-btn'+(type==='trad'?' sel':'');
+  const argsCard = document.getElementById('fiber-args-card');
+  if(type==='trad'){
+    argsCard.style.display='';
+    document.getElementById('fiber-args-body').innerHTML =
+      FIBER_ARGS.map(a=>`<div class="farg-row"><span class="farg-icon">${a.icon}</span><div><div class="farg-title">${a.title}</div><div class="farg-text">${a.text}</div></div></div>`).join('');
+  } else {
+    argsCard.style.display='none';
+  }
+  calcFiber();
+}
+
+function setProvider(name, key){
+  currentProvider = name || document.getElementById('custom-prov-name').value || 'Konkurrent';
+  PROV_KEYS.forEach(k => document.getElementById('prov-btn-'+k).className = 'prov-btn'+(k===key?' sel':''));
+  const wrap = document.getElementById('custom-prov-wrap');
+  wrap.style.display = key==='annen' ? '' : 'none';
+  updateProviderLabels();
+  calcFiber();
+}
+
+function setCustomProv(){
+  currentProvider = document.getElementById('custom-prov-name').value.trim() || 'Konkurrent';
+  updateProviderLabels();
+  calcFiber();
+}
+
+function updateProviderLabels(){
+  const n = currentProvider || 'Konkurrent';
+  document.getElementById('comp-price-label').textContent = n + ' månedspris';
+  document.getElementById('f-comp-label').textContent     = n + ' totalt';
+}
 
 function renderFiber(){
   const list = document.getElementById('fiber-services'); list.innerHTML='';
@@ -690,6 +781,7 @@ function resetFiber(){
   fCustom=[];
   document.getElementById('alti-price').value=899;
   document.getElementById('tele-price').value=1197;
+  setProvider('Altibox','altibox');
   renderFiber();
 }
 
@@ -776,9 +868,10 @@ function calcFiber(){
     bd.appendChild(d);
   };
   if(active.length>0){
-    br('Altibox fiber + TV',fmt(aB));
+    const pn = currentProvider||'Konkurrent';
+    br(pn+(currentConnType==='trad'?' trådløs':' fiber/TV'),fmt(aB));
     if(sT>0) br('Strømmetjenester','+ '+fmt(sT),'red');
-    br('Altibox totalt',fmt(tA),'total');
+    br(pn+' totalt',fmt(tA),'total');
     const sp=document.createElement('div');sp.style.height='6px';bd.appendChild(sp);
     br('Telenor fiber + TV-pakke',fmt(tB));
     if(iV>0) br('TV 2 Play + '+freeOptional.length+' valgfrie inkludert','− '+fmt(iV),'green');
@@ -1233,6 +1326,8 @@ function renderEventsList(){
 document.getElementById('ev-date').value = new Date().toISOString().split('T')[0];
 renderBehov();
 renderFiber();
+setConnType('fiber');
+updateProviderLabels();
 renderLinjeKort();
 calcMobil();
 renderSikre();
