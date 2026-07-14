@@ -686,7 +686,7 @@ const DEFAULT_SERVICES=[
   {id:'amazon',    name:'Amazon Prime Video',     price:79,  included:false, fixed:false},
   {id:'spotify',   name:'Spotify',               price:119, included:false, fixed:false},
   {id:'nrk',       name:'NRK TV',                price:0,   included:false, fixed:false},
-  {id:'rikstv',    name:'RiksTV',               price:629, included:false, fixed:false, compTvOnly:true},
+  {id:'rikstv',    name:'RiksTV',               price:629, included:false, fixed:false, compTvOnly:true, cancelOnSwitch:true},
 ];
 const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0);
 
@@ -752,11 +752,13 @@ function renderFiber(){
   [...fSvc,...fCustom].forEach((s,i)=>{
     if(s.compTvOnly && PROVS_WITH_TV.includes(currentProviderKey)) return;
     const d=document.createElement('div'); d.className='svc-row';
-    const b = s.fixed
-      ? `<span class="badge badge-green">Alltid inkludert</span>`
-      : s.included
-        ? `<span class="badge badge-blue">Valgfri inkludert</span>`
-        : (s.price>0 ? `<span class="badge badge-red">Ikke inkludert</span>` : '');
+    const b = s.cancelOnSwitch
+      ? `<span class="badge badge-orange">Sies opp ved bytte</span>`
+      : s.fixed
+        ? `<span class="badge badge-green">Alltid inkludert</span>`
+        : s.included
+          ? `<span class="badge badge-blue">Valgfri inkludert</span>`
+          : (s.price>0 ? `<span class="badge badge-red">Ikke inkludert</span>` : '');
     d.innerHTML=`<div class="svc-info">
       <div class="svc-name">${s.name} ${b}</div>
       <div class="svc-price">${s.price>0 ? s.price+' kr/mnd' : 'Gratis'}</div>
@@ -798,18 +800,21 @@ function calcFiber(){
   const all = [...fSvc,...fCustom];
   const active = all.filter(s=>s.active);
 
-  // Altibox: base + alle aktive tjenester
+  // Konkurrent: base + alle aktive tjenester (inkl. RiksTV)
   const sT = active.reduce((s,x)=>s+x.price,0);
   const tA = aB+sT;
 
-  // Telenor: TV 2 Play alltid gratis, 3 billigste valgfrie gratis, resten koster
-  const fixedActive = active.filter(s=>s.fixed);
-  const optionalActive = active.filter(s=>s.included && !s.fixed).sort((a,b)=>b.price-a.price);
+  // Telenor: TV 2 Play alltid gratis, 3 dyreste valgfrie gratis, resten koster
+  // cancelOnSwitch (RiksTV) teller IKKE på Telenor – kunden sier det opp
+  const cancelActive = active.filter(s=>s.cancelOnSwitch);
+  const fixedActive  = active.filter(s=>s.fixed);
+  const optionalActive = active.filter(s=>s.included && !s.fixed && !s.cancelOnSwitch).sort((a,b)=>b.price-a.price);
   const freeOptional = optionalActive.slice(0,3);
   const extraOptional = optionalActive.slice(3);
-  const nonIncluded = active.filter(s=>!s.included);
+  const nonIncluded = active.filter(s=>!s.included && !s.cancelOnSwitch);
 
   const iV = [...fixedActive,...freeOptional].reduce((s,x)=>s+x.price,0);
+  const cancelTotal = cancelActive.reduce((s,x)=>s+x.price,0);
   const teleExtraTotal = [...extraOptional,...nonIncluded].reduce((s,x)=>s+x.price,0);
   const tT = tB+teleExtraTotal;
   const diff = tA-tT;
@@ -882,6 +887,7 @@ function calcFiber(){
     const sp=document.createElement('div');sp.style.height='6px';bd.appendChild(sp);
     br('Telenor fiber + TV-pakke',fmt(tB));
     if(iV>0) br('TV 2 Play + '+freeOptional.length+' valgfrie inkludert','− '+fmt(iV),'green');
+    if(cancelTotal>0) br('RiksTV sies opp ved bytte','− '+fmt(cancelTotal),'green');
     if(nonIncluded.reduce((s,x)=>s+x.price,0)>0) br('Tjenester ikke i pakken','+ '+fmt(nonIncluded.reduce((s,x)=>s+x.price,0)));
     br('Telenor totalt',fmt(tT),'total');
     if(extraOptional.length>0){
