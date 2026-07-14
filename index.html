@@ -686,12 +686,16 @@ const DEFAULT_SERVICES=[
   {id:'amazon',    name:'Amazon Prime Video',     price:79,  included:false, fixed:false},
   {id:'spotify',   name:'Spotify',               price:119, included:false, fixed:false},
   {id:'nrk',       name:'NRK TV',                price:0,   included:false, fixed:false},
+  {id:'rikstv',    name:'RiksTV',               price:629, included:false, fixed:false, compTvOnly:true},
 ];
 const ALL_STREAMING_VALUE = DEFAULT_SERVICES.filter(s=>s.included).reduce((s,x)=>s+x.price,0);
+
+const PROVS_WITH_TV = ['altibox','telia'];
 
 let fSvc = DEFAULT_SERVICES.map(s=>({...s,active:false}));
 let fCustom = [];
 let currentProvider = 'Altibox';
+let currentProviderKey = 'altibox';
 let currentConnType = 'fiber';
 
 const PROV_KEYS = ['altibox','nexgen','global','surf','telia','ice','annen'];
@@ -722,11 +726,13 @@ function setConnType(type){
 
 function setProvider(name, key){
   currentProvider = name || document.getElementById('custom-prov-name').value || 'Konkurrent';
+  currentProviderKey = key;
   PROV_KEYS.forEach(k => document.getElementById('prov-btn-'+k).className = 'prov-btn'+(k===key?' sel':''));
   const wrap = document.getElementById('custom-prov-wrap');
   wrap.style.display = key==='annen' ? '' : 'none';
+  if(PROVS_WITH_TV.includes(key)) fSvc.forEach(s=>{ if(s.compTvOnly) s.active=false; });
   updateProviderLabels();
-  calcFiber();
+  renderFiber();
 }
 
 function setCustomProv(){
@@ -744,6 +750,7 @@ function updateProviderLabels(){
 function renderFiber(){
   const list = document.getElementById('fiber-services'); list.innerHTML='';
   [...fSvc,...fCustom].forEach((s,i)=>{
+    if(s.compTvOnly && PROVS_WITH_TV.includes(currentProviderKey)) return;
     const d=document.createElement('div'); d.className='svc-row';
     const b = s.fixed
       ? `<span class="badge badge-green">Alltid inkludert</span>`
